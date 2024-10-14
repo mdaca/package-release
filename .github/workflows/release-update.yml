@@ -1,0 +1,190 @@
+name: Update HTML File with ECR Manifests
+
+on:
+  push:
+    branches:
+      - main  # Adjust this if you want to run on a different branch
+  workflow_dispatch:  # Allows manual trigger of the workflow
+
+jobs:
+  update-html:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+
+      - name: Set up AWS CLI
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} # Set this secret in your repository
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} # Set this secret in your repository
+          aws-region: us-east-1  # Change this to your region
+
+      - name: Update HTML File with ECR Manifests
+        run: |
+          #!/bin/bash
+
+          # Define variables
+          OHDSI_WEBAPI_REPOSITORY_NAME="mdaca/ohdsi/webapi"
+          OHDSI_ATLAS_REPOSITORY_NAME="mdaca/ohdsi/atlas"
+          OHDSI_ACHILLES_REPOSITORY_NAME="mdaca/ohdsi/achilles"
+          JUPYTER_HUB_REPOSITORY_NAME="mdaca/jupyter/jupyter-hub"
+          JUPYTER_HTTP_PROXY_REPOSITORY_NAME="mdaca/jupyter/jupyter-http-proxy"
+          JUPYTER_DATASCIENCE_NOTEBOOK_REPOSITORY_NAME="mdaca/jupyter/jupyter-datascience-notebook"
+          JUPYTER_IMAGE_AWAITER_REPOSITORY_NAME="mdaca/jupyter/jupyter-k8s-image-awaiter"
+          JUPYTER_PAUSE_REPOSITORY_NAME="mdaca/jupyter/jupyter-k8s-pause"
+          JUPYTER_NETWORK_TOOLS_REPOSITORY_NAME="mdaca/jupyter/jupyter-k8s-network-tools"
+          JUPYTER_SECRETS_SYNC_REPOSITORY_NAME="mdaca/jupyter/jupyter-k8s-secrets-sync"
+          JUPYTER_KUBE_SCHEDULER_REPOSITORY_NAME="mdaca/jupyter/jupyter-k8s-kube-scheduler"
+          IMAGE_TAG="latest"
+          HTML_FILE="release.html"  # Update with your HTML file path
+
+          # Fetch the image manifest from ECR for each image
+          MANIFEST_JUPYTER_HUB=$(aws ecr batch-get-image --repository-name "$JUPYTER_HUB_REPOSITORY_NAME" --image-ids imageTag="$IMAGE_TAG" --query 'images[].imageManifest' --output text)
+          MANIFEST_JUPYTER_HTTP_PROXY=$(aws ecr batch-get-image --repository-name "$JUPYTER_HTTP_PROXY_REPOSITORY_NAME" --image-ids imageTag="$IMAGE_TAG" --query 'images[].imageManifest' --output text)
+          MANIFEST_JUPYTER_DATASCIENCE_NOTEBOOK=$(aws ecr batch-get-image --repository-name "$JUPYTER_DATASCIENCE_NOTEBOOK_REPOSITORY_NAME" --image-ids imageTag="$IMAGE_TAG" --query 'images[].imageManifest' --output text)
+          MANIFEST_IMAGE_AWAITER=$(aws ecr batch-get-image --repository-name "$JUPYTER_IMAGE_AWAITER_REPOSITORY_NAME" --image-ids imageTag="$IMAGE_TAG" --query 'images[].imageManifest' --output text)
+          MANIFEST_PAUSE_PROXY=$(aws ecr batch-get-image --repository-name "$JUPYTER_PAUSE_REPOSITORY_NAME" --image-ids imageTag="$IMAGE_TAG" --query 'images[].imageManifest' --output text)
+          MANIFEST_NETWORK_TOOLS=$(aws ecr batch-get-image --repository-name "$JUPYTER_NETWORK_TOOLS_REPOSITORY_NAME" --image-ids imageTag="$IMAGE_TAG" --query 'images[].imageManifest' --output text)
+          MANIFEST_SECRETS_SYNC=$(aws ecr batch-get-image --repository-name "$JUPYTER_SECRETS_SYNC_REPOSITORY_NAME" --image-ids imageTag="$IMAGE_TAG" --query 'images[].imageManifest' --output text)
+          MANIFEST_KUBE_SCHEDULER=$(aws ecr batch-get-image --repository-name "$JUPYTER_KUBE_SCHEDULER_REPOSITORY_NAME" --image-ids imageTag="$IMAGE_TAG" --query 'images[].imageManifest' --output text)
+          MANIFEST_OHDSI_WEBAPI=$(aws ecr batch-get-image --repository-name "$OHDSI_WEBAPI_REPOSITORY_NAME" --image-ids imageTag="$IMAGE_TAG" --query 'images[].imageManifest' --output text)
+          MANIFEST_OHDSI_ATLAS=$(aws ecr batch-get-image --repository-name "$OHDSI_ATLAS_REPOSITORY_NAME" --image-ids imageTag="$IMAGE_TAG" --query 'images[].imageManifest' --output text)
+          MANIFEST_OHDSI_ACHILLES=$(aws ecr batch-get-image --repository-name "$OHDSI_ACHILLES_REPOSITORY_NAME" --image-ids imageTag="$IMAGE_TAG" --query 'images[].imageManifest' --output text)
+          
+          # Check if the commands were successful
+          if [ $? -ne 0 ]; then
+            echo "Error fetching image manifest."
+            exit 1
+          fi
+
+          # Function to compare version strings
+          version_compare() {
+              if [[ "$1" == "$2" ]]; then
+                  return 2
+              fi
+
+              # Convert version strings to arrays
+              IFS='.' read -r -a ver1 <<< "$1"
+              IFS='.' read -r -a ver2 <<< "$2"
+
+              # Compare each part of the version
+              for (( i=0; i<${#ver1[@]}; i++ )); do
+                  v1=${ver1[i]:-0}
+                  v2=${ver2[i]:-0}
+
+                  if (( 10#$v1 > 10#$v2 )); then
+                      return 0
+                  elif (( 10#$v1 < 10#$v2 )); then
+                      return 1
+                  fi
+              done
+
+              return 2  # They are equal
+          }
+
+          # Read the current version from the HTML file
+          OLD_VERSION_JUPYTER_HUB=$(grep -oP 'data-name="jupyter-hub" data-version="\K[^"]+' "$HTML_FILE")
+          OLD_VERSION_JUPYTER_HTTP_PROXY=$(grep -oP 'data-name="jupyter-http-proxy" data-version="\K[^"]+' "$HTML_FILE")
+          OLD_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK=$(grep -oP 'data-name="jupyter-datascience-notebook" data-version="\K[^"]+' "$HTML_FILE")
+          OLD_VERSION_JUPYTER_PAUSE=$(grep -oP 'data-name="jupyter-k8s-pause" data-version="\K[^"]+' "$HTML_FILE")
+          OLD_VERSION_JUPYTER_KUBE_SCHEDULER=$(grep -oP 'data-name="jupyter-k8s-kube-scheduler" data-version="\K[^"]+' "$HTML_FILE")
+          OLD_VERSION_JUPYTER_IMAGE_AWAITER=$(grep -oP 'data-name="jupyter-k8s-image-awaiter" data-version="\K[^"]+' "$HTML_FILE")
+          OLD_VERSION_JUPYTER_NETWORK_TOOLS=$(grep -oP 'data-name="jupyter-k8s-network-tools" data-version="\K[^"]+' "$HTML_FILE")
+          OLD_VERSION_JUPYTER_SECRETS_SYNC=$(grep -oP 'data-name="jupyter-k8s-secrets-sync" data-version="\K[^"]+' "$HTML_FILE")
+          OLD_VERSION_OHDSI_WEBAPI=$(grep -oP 'data-name="ohdsi-webapi" data-version="\K[^"]+' "$HTML_FILE")
+          OLD_VERSION_OHDSI_ATLAS=$(grep -oP 'data-name="ohdsi-atlas" data-version="\K[^"]+' "$HTML_FILE")
+          OLD_VERSION_OHDSI_ACHILLES=$(grep -oP 'data-name="ohdsi-achilles" data-version="\K[^"]+' "$HTML_FILE")
+
+          # Compare versions for each image
+          version_compare_jupyter_hub "$CURRENT_VERSION_JUPYTER_HUB" "$OLD_VERSION_JUPYTER_HUB"
+          result_jupyter_hub=$?
+          version_compare_jupyter_http_proxy "$CURRENT_VERSION_JUPYTER_HTTP_PROXY" "$OLD_VERSION_JUPYTER_HTTP_PROXY"
+          result_jupyter_http_proxy=$?
+          version_compare_jupyter_datascience_notebook "$CURRENT_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK" "$OLD_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK"
+          result_jupyter_datascience_notebook=$?
+          version_compare_jupyter_pause "$CURRENT_VERSION_JUPYTER_PAUSE" "$OLD_VERSION_JUPYTER_PAUSE"
+          result_jupyter_pause=$?
+          version_compare_jupyter_kube_scheduler "$CURRENT_VERSION_JUPYTER_KUBE_SCHEDULER" "$OLD_VERSION_JUPYTER_KUBE_SCHEDULER"
+          result_jupyter_kube_scheduler=$
+          version_compare_jupyter_network-tools "$CURRENT_VERSION_JUPYTER_NETWORK_TOOLS" "$OLD_VERSION_NETWORK_TOOLS"
+          result_jupyter_network_tools=$
+          version_compare_jupyter_secrets_sync "$CURRENT_VERSION_JUPYTER_SECRETS_SYNC" "$OLD_VERSION_JUPYTER_SECRETS_SYNC"
+          result_jupyter_secrets_sync=$
+          version_compare_jupyter_image_awaiter "$CURRENT_VERSION_JUPYTER_IMAGE_AWAITER" "$OLD_VERSION_JUPYTER_IMAGE_AWAITER"
+          result_jupyter_image_awaiter=$
+          version_compare_ohdsi_webapi "$CURRENT_VERSION_OHDSI_WEBAPI" "$OLD_VERSION_OHDSI_WEBAPI"
+          result_ohdsi_webapi=$
+          version_compare_ohdsi_atlas "$CURRENT_VERSION_OHDSI_ATLAS" "$OLD_VERSION_OHDSI_ATLAS"
+          result_ohdsi_atlas=$
+          version_compare_ohdsi_achilles "$CURRENT_VERSION_OHDSI_ACHILLES" "$OLD_VERSION_OHDSI_ACHILLES"
+          result_ohdsi_achilles=$
+
+          # Update the HTML file if the new version is greater
+          if [ $result_jupyter_hub -eq 0 ]; then
+              echo "Updating Jupyter Hub manifest in HTML file."
+              sed -i.bak "/<MANIFEST_JUPYTER_HUB_PLACEHOLDER>/,/{/ {
+                  /<MANIFEST_JUPYTER_HUB_PLACEHOLDER>/!d
+                  s|// <MANIFEST_JUPYTER_HUB_PLACEHOLDER>.*|// <MANIFEST_JUPYTER_HUB_PLACEHOLDER>\n$MANIFEST_JUPYTER_HUB| 
+              }" "$HTML_FILE"
+          else
+              echo "No update for Jupyter Hub: new version is not greater than old version."
+          fi
+
+          if [ $result_jupyter_http_proxy -eq 0 ]; then
+              echo "Updating Jupyter HTTP Proxy manifest in HTML file."
+              sed -i.bak "/<MANIFEST_JUPYTER_HTTP_PROXY_PLACEHOLDER>/,/{/ {
+                  /<MANIFEST_JUPYTER_JUPYTER_HTTP_PROXY_PLACEHOLDER>/!d
+                  s|// <MANIFEST_JUPYTER_HTTP_PROXY_PLACEHOLDER>.*|// <MANIFEST_JUPYTER_HTTP_PROXY_PLACEHOLDER>\n$MANIFEST_JUPYTER_HTTP_PROXY| 
+              }" "$HTML_FILE"
+          else
+              echo "No update for Jupyter: new version is not greater than old version."
+          fi
+
+          if [ $result_jupyter_datascience_notebook -eq 0 ]; then
+              echo "Updating Jupyter manifest in HTML file."
+              sed -i.bak "/<MANIFEST_JUPYTER_PAUSE_PLACEHOLDER>/,/{/ {
+                  /<MANIFEST_JUPYTER_PAUSE_PLACEHOLDER>/!d
+                  s|// <MANIFEST_JUPYTER_PAUSE_PLACEHOLDER>.*|// <MANIFEST_JUPYTER_PAUSE_PLACEHOLDER>\n$MANIFEST_JUPYTER| 
+              }" "$HTML_FILE"
+          else
+              echo "No update for Jupyter: new version is not greater than old version."
+          fi
+
+          if [ $result_jupyter -eq 0 ]; then
+              echo "Updating Jupyter manifest in HTML file."
+              sed -i.bak "/<MANIFEST_JUPYTER_PAUSE_PLACEHOLDER>/,/{/ {
+                  /<MANIFEST_JUPYTER_PAUSE_PLACEHOLDER>/!d
+                  s|// <MANIFEST_JUPYTER_PAUSE_PLACEHOLDER>.*|// <MANIFEST_JUPYTER_PAUSE_PLACEHOLDER>\n$MANIFEST_JUPYTER| 
+              }" "$HTML_FILE"
+          else
+              echo "No update for Jupyter: new version is not greater than old version."
+          fi
+
+          if [ $result_jupyter -eq 0 ]; then
+              echo "Updating Jupyter manifest in HTML file."
+              sed -i.bak "/<MANIFEST_JUPYTER_PAUSE_PLACEHOLDER>/,/{/ {
+                  /<MANIFEST_JUPYTER_PAUSE_PLACEHOLDER>/!d
+                  s|// <MANIFEST_JUPYTER_PAUSE_PLACEHOLDER>.*|// <MANIFEST_JUPYTER_PAUSE_PLACEHOLDER>\n$MANIFEST_JUPYTER| 
+              }" "$HTML_FILE"
+          else
+              echo "No update for Jupyter: new version is not greater than old version."
+          fi
+
+          if [ $result_jupyter -eq 0 ]; then
+              echo "Updating Jupyter manifest in HTML file."
+              sed -i.bak "/<MANIFEST_JUPYTER_PAUSE_PLACEHOLDER>/,/{/ {
+                  /<MANIFEST_JUPYTER_PAUSE_PLACEHOLDER>/!d
+                  s|// <MANIFEST_JUPYTER_PAUSE_PLACEHOLDER>.*|// <MANIFEST_JUPYTER_PAUSE_PLACEHOLDER>\n$MANIFEST_JUPYTER| 
+              }" "$HTML_FILE"
+          else
+              echo "No update for Jupyter: new version is not greater than old version."
+          fi
+
+          # Commit and push changes
+          git config --local user.name "${{ github.actor }}"
+          git config --local user.email "developer@mdaca.io"
+          git add "$HTML_FILE"
+          git commit -m "Update HTML file with new ECR manifests [skip ci]" || echo "No changes to commit"
+          git push origin main
