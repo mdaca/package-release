@@ -111,7 +111,30 @@
             </div>
         </div>
     </div>
+<style>
+    /* Set a wider modal width */
+    .modal-dialog {
+        max-width: 90%; /* Adjust this value as needed */
+    }
 
+    /* Make the content inside the modal scrollable if it overflows */
+    .modal-body {
+        max-height: 80vh; /* Limit the height of the modal */
+        overflow-y: auto; /* Add vertical scroll if content exceeds the modal height */
+        word-wrap: break-word; /* Prevent long lines of text from overflowing */
+        white-space: pre-wrap; /* Preserve formatting for JSON and long text */
+    }
+
+    /* Optional: Customize the appearance of the scroll bar */
+    .modal-body::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .modal-body::-webkit-scrollbar-thumb {
+        background-color: #888;
+        border-radius: 4px;
+    }
+</style>
 <script>
     const manifests = {
         'jupyter-k8s-secrets-sync': {
@@ -172,6 +195,5 @@
         }
     }
 </script>
-
 </body>
 </html>
