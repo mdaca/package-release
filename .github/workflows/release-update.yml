@@ -20,6 +20,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} # Set this secret in your repository
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} # Set this secret in your repository
           aws-region: us-east-1  # Change this to your region
+          mask-aws-account-id: false
 
       - name: Update HTML File with ECR Manifests
         run: |
