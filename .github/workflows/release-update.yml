@@ -3,7 +3,7 @@ name: Update HTML File with ECR Manifests
 on:
   push:
     branches:
-      - main  # Adjust this if you want to run on a different branch
+      - iryna_test  # Adjust this if you want to run on a different branch
   workflow_dispatch:  # Allows manual trigger of the workflow
 
 jobs:
@@ -233,8 +233,8 @@ jobs:
           fi
 
           # Commit and push changes
-          git config --local user.name "${{ github.actor }}"
-          git config --local user.email "developer@mdaca.io"
-          git add "$HTML_FILE"
-          git commit -m "Update HTML file with new ECR manifests [skip ci]" || echo "No changes to commit"
-          git push origin main
+          # git config --local user.name "${{ github.actor }}"
+          # git config --local user.email "developer@mdaca.io"
+          # git add "$HTML_FILE"
+          # git commit -m "Update HTML file with new ECR manifests [skip ci]" || echo "No changes to commit"
+          # git push origin main
