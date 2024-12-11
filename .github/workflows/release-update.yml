@@ -42,6 +42,10 @@ jobs:
           HTML_FILE="release.html"  # Update with your HTML file path
 
           # Fetch the image manifest from ECR for each image
+
+          LIST_OF_IMAGES=$(aws ecr list-images --repository-name "$JUPYTER_HUB_REPOSITORY_NAME" --region us-east-1)
+          echo $LIST_OF_IMAGES
+          
           MANIFEST_JUPYTER_HUB=$(aws ecr batch-get-image --repository-name "$JUPYTER_HUB_REPOSITORY_NAME" --image-ids imageTag="$IMAGE_TAG" --query 'images[].imageManifest' --output text)
           MANIFEST_JUPYTER_HTTP_PROXY=$(aws ecr batch-get-image --repository-name "$JUPYTER_HTTP_PROXY_REPOSITORY_NAME" --image-ids imageTag="$IMAGE_TAG" --query 'images[].imageManifest' --output text)
           MANIFEST_JUPYTER_DATASCIENCE_NOTEBOOK=$(aws ecr batch-get-image --repository-name "$JUPYTER_DATASCIENCE_NOTEBOOK_REPOSITORY_NAME" --image-ids imageTag="$IMAGE_TAG" --query 'images[].imageManifest' --output text)
