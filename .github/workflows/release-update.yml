@@ -46,7 +46,7 @@ jobs:
           #LIST_OF_IMAGES=$(aws ecr list-images --repository-name "$JUPYTER_HUB_REPOSITORY_NAME" --region us-east-1)
           #echo $LIST_OF_IMAGES
           
-          MANIFEST_JUPYTER_HUB=$(aws ecr batch-get-image --repository-name "$JUPYTER_HUB_REPOSITORY_NAME" --image-ids imageTag="5.1.0.0" --query 'images[].imageManifest' --output text)
+          MANIFEST_JUPYTER_HUB=$(aws ecr batch-get-image --repository-name "$JUPYTER_HUB_REPOSITORY_NAME" --image-ids imageTag="$IMAGE_TAG" --region us-east-1 --query 'images[].imageManifest' --output text)
           echo $MANIFEST_JUPYTER_HUB
           
           MANIFEST_JUPYTER_HTTP_PROXY=$(aws ecr batch-get-image --repository-name "$JUPYTER_HTTP_PROXY_REPOSITORY_NAME" --image-ids imageTag="$IMAGE_TAG" --query 'images[].imageManifest' --output text)
