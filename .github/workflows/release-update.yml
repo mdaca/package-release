@@ -77,11 +77,13 @@ jobs:
             exit 1
           fi
 
+        
           # Function to compare version strings
           version_compare() {
               if [[ "$1" == "$2" ]]; then
                   echo "They are equal 1"
-                  return 2
+                  compare_result=2
+                  return $compare_result
               fi
 
               # Convert version strings to arrays
@@ -94,13 +96,16 @@ jobs:
                   v2=${ver2[i]:-0}
 
                   if (( 10#$v1 > 10#$v2 )); then
-                      return 0
+                  compare_result=0
+                     return $compare_result
                   elif (( 10#$v1 < 10#$v2 )); then
-                      return 1
+                     compare_result=1
+                      return $compare_result
                   fi
               done
               echo "They are equal 2"
-              return 2  # They are equal
+             compare_result=2
+             return $compare_result  # They are equal
           }
 
           # Read the current version from the HTML file
@@ -117,8 +122,10 @@ jobs:
           OLD_VERSION_OHDSI_ACHILLES=$(grep -oP 'data-name="ohdsi-achilles" data-version="\K[^"]+' "$HTML_FILE")
 
           # Compare versions for each image
-          version_compare "$CURRENT_VERSION_JUPYTER_HUB" "$OLD_VERSION_JUPYTER_HUB"
-          echo result_jupyter_hub=$?
+          version_compare "$CURRENT_VERSION_JUPYTER_HUB" "$OLD_VERSION_JUPYTER_HUB
+          result_jupyter_hub=$?
+          echo $result_jupyter_hub
+          
           version_compare "$CURRENT_VERSION_JUPYTER_HTTP_PROXY" "$OLD_VERSION_JUPYTER_HTTP_PROXY"
           result_jupyter_http_proxy=$?
           version_compare "$CURRENT_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK" "$OLD_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK"
@@ -126,19 +133,21 @@ jobs:
           version_compare "$CURRENT_VERSION_JUPYTER_PAUSE" "$OLD_VERSION_JUPYTER_PAUSE"
           result_jupyter_pause=$?
           version_compare "$CURRENT_VERSION_JUPYTER_KUBE_SCHEDULER" "$OLD_VERSION_JUPYTER_KUBE_SCHEDULER"
-          result_jupyter_kube_scheduler=$
+          result_jupyter_kube_scheduler=$?
           version_compare "$CURRENT_VERSION_JUPYTER_NETWORK_TOOLS" "$OLD_VERSION_NETWORK_TOOLS"
-          result_jupyter_network_tools=$
+          result_jupyter_network_tools=$?
           version_compare "$CURRENT_VERSION_JUPYTER_SECRETS_SYNC" "$OLD_VERSION_JUPYTER_SECRETS_SYNC"
-          result_jupyter_secrets_sync=$
+          result_jupyter_secrets_sync=$?
           version_compare "$CURRENT_VERSION_JUPYTER_IMAGE_AWAITER" "$OLD_VERSION_JUPYTER_IMAGE_AWAITER"
-          result_jupyter_image_awaiter=$
+          result_jupyter_image_awaiter=$?
           version_compare "$CURRENT_VERSION_OHDSI_WEBAPI" "$OLD_VERSION_OHDSI_WEBAPI"
-          result_ohdsi_webapi=$
+          result_ohdsi_webapi=$?
           version_compare "$CURRENT_VERSION_OHDSI_ATLAS" "$OLD_VERSION_OHDSI_ATLAS"
-          result_ohdsi_atlas=$
+          result_ohdsi_atlas=$?
           version_compare "$CURRENT_VERSION_OHDSI_ACHILLES" "$OLD_VERSION_OHDSI_ACHILLES"
-          result_ohdsi_achilles=$
+          result_ohdsi_achilles=$?
+          
+          echo "results compared"
 
           # Update the HTML file if the new version is greater
           if [ $result_jupyter_hub -eq 0 ]; then
