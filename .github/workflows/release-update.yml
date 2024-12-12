@@ -13,7 +13,6 @@ jobs:
     steps:
       #- name: Checkout the code
       #  uses: actions/checkout@v2
-
       - name: Set up AWS CLI and get ECR Token
         env:
           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
