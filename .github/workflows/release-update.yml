@@ -80,6 +80,7 @@ jobs:
           # Function to compare version strings
           version_compare() {
               if [[ "$1" == "$2" ]]; then
+                  echo "They are equal 1"
                   return 2
               fi
 
@@ -98,7 +99,7 @@ jobs:
                       return 1
                   fi
               done
-
+              echo "They are equal 2"
               return 2  # They are equal
           }
 
