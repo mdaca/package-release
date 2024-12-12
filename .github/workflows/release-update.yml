@@ -39,11 +39,11 @@ jobs:
           JUPYTER_HUB_REPOSITORY_NAME="mdaca/jupyter/jupyter-hub"
           JUPYTER_HTTP_PROXY_REPOSITORY_NAME="mdaca/jupyter/jupyter-http-proxy"
           JUPYTER_DATASCIENCE_NOTEBOOK_REPOSITORY_NAME="mdaca/jupyter/jupyter-datascience-notebook"
-          JUPYTER_IMAGE_AWAITER_REPOSITORY_NAME="mdaca/jupyter/jupyter-k8s-image-awaiter"
-          JUPYTER_PAUSE_REPOSITORY_NAME="mdaca/jupyter/jupyter-k8s-pause"
-          JUPYTER_NETWORK_TOOLS_REPOSITORY_NAME="mdaca/jupyter/jupyter-k8s-network-tools"
-          JUPYTER_SECRETS_SYNC_REPOSITORY_NAME="mdaca/jupyter/jupyter-k8s-secrets-sync"
-          JUPYTER_KUBE_SCHEDULER_REPOSITORY_NAME="mdaca/jupyter/jupyter-k8s-kube-scheduler"
+          JUPYTER_IMAGE_AWAITER_REPOSITORY_NAME="mdaca/jupyter/k8s/image-awaiter"
+          JUPYTER_PAUSE_REPOSITORY_NAME="mdaca/jupyter/jupyter/k8/pause"
+          JUPYTER_NETWORK_TOOLS_REPOSITORY_NAME="mdaca/jupyter/k8s/network-tools"
+          JUPYTER_SECRETS_SYNC_REPOSITORY_NAME="mdaca/jupyter/k8s/secrets-sync"
+          JUPYTER_KUBE_SCHEDULER_REPOSITORY_NAME="mdaca/jupyter/k8s/kube-scheduler"
           IMAGE_TAG="latest"
           HTML_FILE="release.html"  # Update with your HTML file path
 
