@@ -51,6 +51,8 @@ jobs:
           echo $JUPYTER_HUB_REPOSITORY_NAME
           MANIFEST_JUPYTER_HUB=$(aws ecr batch-get-image --repository-name "$JUPYTER_HUB_REPOSITORY_NAME" --region us-east-2 --image-ids imageTag="$IMAGE_TAG" --query 'images[].imageManifest' --output text)
           echo $MANIFEST_JUPYTER_HUB
+          CURRENT_VERSION_JUPYTER_HUB=$(aws ecr describe-images --output json --repository-name $DOCKER_IMAGE_NAME --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' | jq . --raw-output)
+          echo $CURRENT_VERSION_JUPYTER_HUB
           echo $JUPYTER_HTTP_PROXY_REPOSITORY_NAME
           MANIFEST_JUPYTER_HTTP_PROXY=$(aws ecr batch-get-image --repository-name "$JUPYTER_HTTP_PROXY_REPOSITORY_NAME" --region us-east-2 --image-ids imageTag="$IMAGE_TAG"  --query 'images[].imageManifest' --output text)
           echo $JUPYTER_DATASCIENCE_NOTEBOOK_REPOSITORY_NAME
