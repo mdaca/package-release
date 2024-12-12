@@ -50,6 +50,7 @@ jobs:
           # Fetch the image manifest from ECR for each image
           echo $JUPYTER_HUB_REPOSITORY_NAME
           MANIFEST_JUPYTER_HUB=$(aws ecr batch-get-image --repository-name "$JUPYTER_HUB_REPOSITORY_NAME" --region us-east-2 --image-ids imageTag="$IMAGE_TAG" --query 'images[].imageManifest' --output text)
+          echo $MANIFEST_JUPYTER_HUB
           echo $JUPYTER_HTTP_PROXY_REPOSITORY_NAME
           MANIFEST_JUPYTER_HTTP_PROXY=$(aws ecr batch-get-image --repository-name "$JUPYTER_HTTP_PROXY_REPOSITORY_NAME" --region us-east-2 --image-ids imageTag="$IMAGE_TAG"  --query 'images[].imageManifest' --output text)
           echo $JUPYTER_DATASCIENCE_NOTEBOOK_REPOSITORY_NAME
