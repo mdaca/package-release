@@ -57,7 +57,7 @@ jobs:
           echo $JUPYTER_IMAGE_AWAITER_REPOSITORY_NAME
           MANIFEST_IMAGE_AWAITER=$(aws ecr batch-get-image --repository-name "$JUPYTER_IMAGE_AWAITER_REPOSITORY_NAME" --region us-east-2 --image-ids imageTag="$IMAGE_TAG" --query 'images[].imageManifest' --output text)
           echo $JUPYTER_PAUSE_REPOSITORY_NAME
-          MANIFEST_PAUSE_PROXY=$(aws ecr batch-get-image --repository-name "$JUPYTER_PAUSE_REPOSITORY_NAME" --region us-east-2--image-ids imageTag="$IMAGE_TAG" --query 'images[].imageManifest' --output text)
+          MANIFEST_PAUSE_PROXY=$(aws ecr batch-get-image --repository-name "$JUPYTER_PAUSE_REPOSITORY_NAME" --region us-east-2 --image-ids imageTag="$IMAGE_TAG" --query 'images[].imageManifest' --output text)
           echo $JUPYTER_NETWORK_TOOLS_REPOSITORY_NAME
           MANIFEST_NETWORK_TOOLS=$(aws ecr batch-get-image --repository-name "$JUPYTER_NETWORK_TOOLS_REPOSITORY_NAME" --region us-east-2 --image-ids imageTag="$IMAGE_TAG" --query 'images[].imageManifest' --output text)
           echo $JUPYTER_SECRETS_SYNC_REPOSITORY_NAME
