@@ -40,7 +40,7 @@ jobs:
           JUPYTER_HTTP_PROXY_REPOSITORY_NAME="mdaca/jupyter/jupyter-http-proxy"
           JUPYTER_DATASCIENCE_NOTEBOOK_REPOSITORY_NAME="mdaca/jupyter/jupyter-datascience-notebook"
           JUPYTER_IMAGE_AWAITER_REPOSITORY_NAME="mdaca/jupyter/k8s/image-awaiter"
-          JUPYTER_PAUSE_REPOSITORY_NAME="mdaca/jupyter/jupyter/k8/pause"
+          JUPYTER_PAUSE_REPOSITORY_NAME="mdaca/jupyter/k8/pause"
           JUPYTER_NETWORK_TOOLS_REPOSITORY_NAME="mdaca/jupyter/k8s/network-tools"
           JUPYTER_SECRETS_SYNC_REPOSITORY_NAME="mdaca/jupyter/k8s/secrets-sync"
           JUPYTER_KUBE_SCHEDULER_REPOSITORY_NAME="mdaca/jupyter/k8s/kube-scheduler"
