@@ -51,9 +51,6 @@ jobs:
           echo $JUPYTER_HUB_REPOSITORY_NAME
           MANIFEST_JUPYTER_HUB=$(aws ecr batch-get-image --repository-name "$JUPYTER_HUB_REPOSITORY_NAME" --region us-east-2 --image-ids imageTag="$IMAGE_TAG" --query 'images[].imageManifest' --output text)
           echo $MANIFEST_JUPYTER_HUB
-          #CURRENT_VERSION_JUPYTER_HUB=$(aws ecr describe-images --output json --repository-name $JUPYTER_HUB_REPOSITORY_NAME --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[]' | jq . --raw-output)
-          CURRENT_VERSION_JUPYTER_HUB=$(aws ecr describe-images --output json --repository-name $JUPYTER_HUB_REPOSITORY_NAME --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[1]' | jq . --raw-output)
-          echo $CURRENT_VERSION_JUPYTER_HUB
           echo $JUPYTER_HTTP_PROXY_REPOSITORY_NAME
           MANIFEST_JUPYTER_HTTP_PROXY=$(aws ecr batch-get-image --repository-name "$JUPYTER_HTTP_PROXY_REPOSITORY_NAME" --region us-east-2 --image-ids imageTag="$IMAGE_TAG"  --query 'images[].imageManifest' --output text)
           #CURRENT_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK=$(aws ecr describe-images --output json --repository-name $JUPYTER_HUB_REPOSITORY_NAME --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[1]' | jq . --raw-output)
@@ -67,7 +64,7 @@ jobs:
           MANIFEST_NETWORK_TOOLS=$(aws ecr batch-get-image --repository-name "$JUPYTER_NETWORK_TOOLS_REPOSITORY_NAME" --region us-east-2 --image-ids imageTag="$IMAGE_TAG" --query 'images[].imageManifest' --output text)
           echo $JUPYTER_SECRETS_SYNC_REPOSITORY_NAME
           MANIFEST_SECRETS_SYNC=$(aws ecr batch-get-image --repository-name "$JUPYTER_SECRETS_SYNC_REPOSITORY_NAME" --region us-east-2 --image-ids imageTag="$IMAGE_TAG" --query 'images[].imageManifest' --output text)
-          echo $JUPYTER_KUBE_SCHEDULER_REPOSITORY_NAM
+          echo $JUPYTER_KUBE_SCHEDULER_REPOSITORY_NAME
           MANIFEST_KUBE_SCHEDULER=$(aws ecr batch-get-image --repository-name "$JUPYTER_KUBE_SCHEDULER_REPOSITORY_NAME" --region us-east-2 --image-ids imageTag="$IMAGE_TAG" --query 'images[].imageManifest' --output text)
           echo $OHDSI_WEBAPI_REPOSITORY_NAME
           MANIFEST_OHDSI_WEBAPI=$(aws ecr batch-get-image --repository-name "$OHDSI_WEBAPI_REPOSITORY_NAME" --region us-east-2 --image-ids imageTag="$IMAGE_TAG" --query 'images[].imageManifest' --output text)
@@ -76,6 +73,21 @@ jobs:
           echo $OHDSI_ACHILLES_REPOSITORY_NAME
           MANIFEST_OHDSI_ACHILLES=$(aws ecr batch-get-image --repository-name "$OHDSI_ACHILLES_REPOSITORY_NAME" --region us-east-2 --image-ids imageTag="$IMAGE_TAG" --query 'images[].imageManifest' --output text)
           
+
+          CURRENT_VERSION_JUPYTER_HUB=$(aws ecr describe-images --output json --repository-name $JUPYTER_HUB_REPOSITORY_NAME --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[1]' | jq . --raw-output)
+           echo $CURRENT_VERSION_JUPYTER_HUB
+          CURRENT_VERSION_JUPYTER_HTTP_PROXY=$(aws ecr describe-images --output json --repository-name $JUPYTER_HTTP_PROXY_REPOSITORY_NAME --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[1]' | jq . --raw-output)
+          CURRENT_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK=$(aws ecr describe-images --output json --repository-name $JUPYTER_DATASCIENCE_NOTEBOOK_REPOSITORY_NAME --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[1]' | jq . --raw-output)
+          CURRENT_VERSION_JUPYTER_PAUSE=$(aws ecr describe-images --output json --repository-name $JUPYTER_PAUSE_REPOSITORY_NAME --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[1]' | jq . --raw-output)
+          CURRENT_VERSION_JUPYTER_KUBE_SCHEDULER=$(aws ecr describe-images --output json --repository-name $JUPYTER_KUBE_SCHEDULER_REPOSITORY_NAME --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[1]' | jq . --raw-output)
+          CURRENT_VERSION_JUPYTER_IMAGE_AWAITER=$(aws ecr describe-images --output json --repository-name $JUPYTER_IMAGE_AWAITER_REPOSITORY_NAME --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[1]' | jq . --raw-output)
+          CURRENT_VERSION_JUPYTER_NETWORK_TOOLS=$(aws ecr describe-images --output json --repository-name $JUPYTER_NETWORK_TOOLS_REPOSITORY_NAME --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[1]' | jq . --raw-output)
+          CURRENT_VERSION_JUPYTER_SECRETS_SYNC=$(aws ecr describe-images --output json --repository-name $JUPYTER_SECRETS_SYNC_REPOSITORY_NAME --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[1]' | jq . --raw-output)
+          CURRENT_VERSION_OHDSI_WEBAPI=$(aws ecr describe-images --output json --repository-name $OHDSI_WEBAPI_REPOSITORY_NAME --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[1]' | jq . --raw-output)
+          CURRENT_VERSION_OHDSI_ATLAS=$(aws ecr describe-images --output json --repository-name $OHDSI_ATLAS_REPOSITORY_NAME --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[1]' | jq . --raw-output)
+          CURRENT_VERSION_OHDSI_ACHILLES=$(aws ecr describe-images --output json --repository-name $OHDSI_ACHILLES_REPOSITORY_NAME --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[1]' | jq . --raw-output)
+          echo $CURRENT_VERSION_OHDSI_ACHILLES
+
           # Check if the commands were successful
           if [ $? -ne 0 ]; then
             echo "Error fetching image manifest."
@@ -130,6 +142,7 @@ jobs:
 
           # Compare versions for each image
           version_compare "$CURRENT_VERSION_JUPYTER_HUB" "$OLD_VERSION_JUPYTER_HUB
+          echo "test"
           result_jupyter_hub=$?
           echo $result_jupyter_hub
           version_compare "$CURRENT_VERSION_JUPYTER_HTTP_PROXY" "$OLD_VERSION_JUPYTER_HTTP_PROXY"
@@ -158,112 +171,134 @@ jobs:
           # Update the HTML file if the new version is greater
           if [ $result_jupyter_hub -eq 0 ]; then
               echo "Updating Jupyter Hub manifest in HTML file."
-           #   sed -i.bak "/<MANIFEST_JUPYTER_HUB_PLACEHOLDER>/,/{/ {
-           #     /<MANIFEST_JUPYTER_HUB_PLACEHOLDER>/!d
-           #       s|// <MANIFEST_JUPYTER_HUB_PLACEHOLDER>.*|// <MANIFEST_JUPYTER_HUB_PLACEHOLDER>\n$MANIFEST_JUPYTER_HUB| 
-            # }" "$HTML_FILE"
+              : <<'END'
+              sed -i.bak "/<MANIFEST_JUPYTER_HUB_PLACEHOLDER>/,/{/ {
+                  /<MANIFEST_JUPYTER_HUB_PLACEHOLDER>/!d
+                  s|// <MANIFEST_JUPYTER_HUB_PLACEHOLDER>.*|// <MANIFEST_JUPYTER_HUB_PLACEHOLDER>\n$MANIFEST_JUPYTER_HUB| 
+              }" "$HTML_FILE"
+              END
           else
-              echo "No update for Jupyter Hub new version is not greater than old version."
+              echo "No update for Jupyter Hub: new version is not greater than old version."
           fi
 
           if [ $result_jupyter_http_proxy -eq 0 ]; then
               echo "Updating Jupyter HTTP Proxy manifest in HTML file."
-            #            sed -i.bak "/<MANIFEST_JUPYTER_HTTP_PROXY_PLACEHOLDER>/,/{/ {
-            #                /<MANIFEST_JUPYTER_JUPYTER_HTTP_PROXY_PLACEHOLDER>/!d
-            #                s|// <MANIFEST_JUPYTER_HTTP_PROXY_PLACEHOLDER>.*|// <MANIFEST_JUPYTER_HTTP_PROXY_PLACEHOLDER>\n$MANIFEST_JUPYTER_HTTP_PROXY| 
-            #            }" "$HTML_FILE"
+              : <<'END'
+              sed -i.bak "/<MANIFEST_JUPYTER_HTTP_PROXY_PLACEHOLDER>/,/{/ {
+                  /<MANIFEST_JUPYTER_JUPYTER_HTTP_PROXY_PLACEHOLDER>/!d
+                  s|// <MANIFEST_JUPYTER_HTTP_PROXY_PLACEHOLDER>.*|// <MANIFEST_JUPYTER_HTTP_PROXY_PLACEHOLDER>\n$MANIFEST_JUPYTER_HTTP_PROXY| 
+              }" "$HTML_FILE"
+              END
           else
-              echo "No update for Jupyter HTTP Proxy new version is not greater than old version."
+              echo "No update for Jupyter HTTP Proxy: new version is not greater than old version."
           fi
 
           if [ $result_jupyter_datascience_notebook -eq 0 ]; then
               echo "Updating Jupyter DataScience Notebook manifest in HTML file."
-            #            sed -i.bak "/<MANIFEST_JUPYTER_DATASCIENCE_NOTEBOOK_PLACEHOLDER>/,/{/ {
-            #                /<MANIFEST_JUPYTER_DATASCIENCE_NOTEBOOK_PLACEHOLDER>/!d
-            #                s|// <MANIFEST_JUPYTER_DATASCIENCE_NOTEBOOK_PLACEHOLDER>.*|// <MANIFEST_JUPYTER_DATASCIENCE_NOTEBOOK_PLACEHOLDER>\n$MANIFEST_JUPYTER_DATASCIENCE_NOTEBOOK| 
-            #            }" "$HTML_FILE"
+              : <<'END'
+              sed -i.bak "/<MANIFEST_JUPYTER_DATASCIENCE_NOTEBOOK_PLACEHOLDER>/,/{/ {
+                  /<MANIFEST_JUPYTER_DATASCIENCE_NOTEBOOK_PLACEHOLDER>/!d
+                  s|// <MANIFEST_JUPYTER_DATASCIENCE_NOTEBOOK_PLACEHOLDER>.*|// <MANIFEST_JUPYTER_DATASCIENCE_NOTEBOOK_PLACEHOLDER>\n$MANIFEST_JUPYTER_DATASCIENCE_NOTEBOOK| 
+              }" "$HTML_FILE"
+              END
           else
-              echo "No update for Jupyter DataScience Notebook new version is not greater than old version."
+              echo "No update for Jupyter DataScience Notebook: new version is not greater than old version."
           fi
 
           if [ $result_jupyter_pause -eq 0 ]; then
               echo "Updating Jupyter k8s Pause manifest in HTML file."
-             #             sed -i.bak "/<MANIFEST_JUPYTER_PAUSE_PLACEHOLDER>/,/{/ {
-             #                 /<MANIFEST_JUPYTER_PAUSE_PLACEHOLDER>/!d
-             #                 s|// <MANIFEST_JUPYTER_PAUSE_PLACEHOLDER>.*|// <MANIFEST_JUPYTER_PAUSE_PLACEHOLDER>\n$MANIFEST_JUPYTER_PAUSE| 
-             #             }" "$HTML_FILE"
+              : <<'END'
+              sed -i.bak "/<MANIFEST_JUPYTER_PAUSE_PLACEHOLDER>/,/{/ {
+                  /<MANIFEST_JUPYTER_PAUSE_PLACEHOLDER>/!d
+                  s|// <MANIFEST_JUPYTER_PAUSE_PLACEHOLDER>.*|// <MANIFEST_JUPYTER_PAUSE_PLACEHOLDER>\n$MANIFEST_JUPYTER_PAUSE| 
+              }" "$HTML_FILE"
+             END
           else
-              echo "No update for Jupyter K8s Pause new version is not greater than old version."
+              echo "No update for Jupyter K8s Pause: new version is not greater than old version."
           fi
 
           if [ $result_jupyter_kube_scheduler -eq 0 ]; then
               echo "Updating Jupyter K8s Kube Scheduler manifest in HTML file."
-             #             sed -i.bak "/<MANIFEST_JUPYTER_KUBE_SCHEDULER_PLACEHOLDER>/,/{/ {
-             #                 /<MANIFEST_JUPYTER_KUBE_SCHEDULER_PLACEHOLDER>/!d
-             #                 s|// <MANIFEST_JUPYTER_KUBE_SCHEDULER_PLACEHOLDER>.*|// <MANIFEST_JUPYTER_KUBE_SCHEDULER_PLACEHOLDER>\n$MANIFEST_JUPYTER_KUBE_SCHEDULER| 
-             #             }" "$HTML_FILE"
+              : <<'END'
+              sed -i.bak "/<MANIFEST_JUPYTER_KUBE_SCHEDULER_PLACEHOLDER>/,/{/ {
+                  /<MANIFEST_JUPYTER_KUBE_SCHEDULER_PLACEHOLDER>/!d
+                  s|// <MANIFEST_JUPYTER_KUBE_SCHEDULER_PLACEHOLDER>.*|// <MANIFEST_JUPYTER_KUBE_SCHEDULER_PLACEHOLDER>\n$MANIFEST_JUPYTER_KUBE_SCHEDULER| 
+              }" "$HTML_FILE"
+              END
           else
-              echo "No update for Jupyter K8s Kube Scheduler  new version is not greater than old version."
+              echo "No update for Jupyter K8s Kube Scheduler : new version is not greater than old version."
           fi
 
           if [ $result_jupyter_image_awaiter -eq 0 ]; then
               echo "Updating Jupyter Image Awaiter manifest in HTML file."
-               #           sed -i.bak "/<MANIFEST_JUPYTER_IMAGE_AWAITER_PLACEHOLDER>/,/{/ {
-               #               /<MANIFEST_JUPYTER_IMAGE_AWAITER_PLACEHOLDER>/!d
-               #               s|// <MANIFEST_JUPYTER_IMAGE_AWAITER_PLACEHOLDER>.*|// <MANIFEST_JUPYTER_IMAGE_AWAITER_PLACEHOLDER>\n$MANIFEST_JUPYTER_IMAGE_AWAITER| 
-               #           }" "$HTML_FILE"
+              : <<'END'
+              sed -i.bak "/<MANIFEST_JUPYTER_IMAGE_AWAITER_PLACEHOLDER>/,/{/ {
+                  /<MANIFEST_JUPYTER_IMAGE_AWAITER_PLACEHOLDER>/!d
+                  s|// <MANIFEST_JUPYTER_IMAGE_AWAITER_PLACEHOLDER>.*|// <MANIFEST_JUPYTER_IMAGE_AWAITER_PLACEHOLDER>\n$MANIFEST_JUPYTER_IMAGE_AWAITER| 
+              }" "$HTML_FILE"
+              END
           else
-              echo "No update for Jupyter Image Awaiter  new version is not greater than old version."
+              echo "No update for Jupyter Image Awaiter : new version is not greater than old version."
           fi
 
           if [ $result_jupyter_network_tools -eq 0 ]; then
               echo "Updating Jupyter Network Tools manifest in HTML file."
-            #    sed -i.bak "/<MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>/,/{/ {
-            #     /<MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>/!d
-            #     s|// <MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>.*|// <MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>\n$MANIFEST_JUPYTER_NETWORK_TOOLS| 
-            #    }" "$HTML_FILE"
+              : <<'END'
+              sed -i.bak "/<MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>/,/{/ {
+                  /<MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>/!d
+                  s|// <MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>.*|// <MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>\n$MANIFEST_JUPYTER_NETWORK_TOOLS| 
+              }" "$HTML_FILE"
+              END
           else
-              echo "No update for Jupyter Network Tools  new version is not greater than old version."
+              echo "No update for Jupyter Network Tools : new version is not greater than old version."
           fi
 
           if [ $result_jupyter_secrets_sync -eq 0 ]; then
               echo "Updating Jupyter Secret Sync manifest in HTML file."
-             # sed -i.bak "/<MANIFEST_JUPYTER_SECRETS_SYNC_PLACEHOLDER>/,/{/ {
-             #     /<MANIFEST_JUPYTER_SECRETS_SYNC_PLACEHOLDER>/!d
-             #     s|// <MANIFEST_JUPYTER_SECRETS_SYNC_PLACEHOLDER>.*|// <MANIFEST_JUPYTER_SECRETS_SYNC_PLACEHOLDER>\n$MANIFEST_JUPYTER_SECRETS_SYNC| 
-             # }" "$HTML_FILE"
+              : <<'END'
+              sed -i.bak "/<MANIFEST_JUPYTER_SECRETS_SYNC_PLACEHOLDER>/,/{/ {
+                  /<MANIFEST_JUPYTER_SECRETS_SYNC_PLACEHOLDER>/!d
+                  s|// <MANIFEST_JUPYTER_SECRETS_SYNC_PLACEHOLDER>.*|// <MANIFEST_JUPYTER_SECRETS_SYNC_PLACEHOLDER>\n$MANIFEST_JUPYTER_SECRETS_SYNC| 
+              }" "$HTML_FILE"
+              END
           else
-              echo "No update for Jupyter Secrets Sync  new version is not greater than old version."
+              echo "No update for Jupyter Secrets Sync : new version is not greater than old version."
           fi
 
           if [ $result_ohdsi_webapi -eq 0 ]; then
               echo "Updating OHDSI WEBAPI manifest in HTML file."
-             #  sed -i.bak "/<MANIFEST_OHDSI_WEBAPI_PLACEHOLDER>/,/{/ {
-             #     /<MANIFEST_OHDSI_WEBAPI_PLACEHOLDER>/!d
-             #     s|// <MANIFEST_OHDSI_WEBAPI_PLACEHOLDER>.*|// <MANIFEST_OHDSI_WEBAPI_PLACEHOLDER>\n$MANIFEST_OHDSI_WEBAPI| 
-             # }" "$HTML_FILE"
+              : <<'END'
+              sed -i.bak "/<MANIFEST_OHDSI_WEBAPI_PLACEHOLDER>/,/{/ {
+                  /<MANIFEST_OHDSI_WEBAPI_PLACEHOLDER>/!d
+                  s|// <MANIFEST_OHDSI_WEBAPI_PLACEHOLDER>.*|// <MANIFEST_OHDSI_WEBAPI_PLACEHOLDER>\n$MANIFEST_OHDSI_WEBAPI| 
+              }" "$HTML_FILE"
+              END
           else
-              echo "No update for OHDSI WEBAPI  new version is not greater than old version."
+              echo "No update for OHDSI WEBAPI : new version is not greater than old version."
           fi
 
           if [ $result_ohdsi_achilles -eq 0 ]; then
               echo "Updating OHDSI Achilles manifest in HTML file."
-             # sed -i.bak "/<MANIFEST_OHDSI_ACHILLES_PLACEHOLDER>/,/{/ {
-             #     /<MANIFEST_OHDSI_ACHILLES_PLACEHOLDER>/!d
-             #     s|// <MANIFEST_OHDSI_ACHILLES_PLACEHOLDER>.*|// <MANIFEST_OHDSI_ACHILLES_PLACEHOLDER>\n$MANIFEST_OHDSI_ACHILLES| 
-             # }" "$HTML_FILE"
+              : <<'END'
+              sed -i.bak "/<MANIFEST_OHDSI_ACHILLES_PLACEHOLDER>/,/{/ {
+                  /<MANIFEST_OHDSI_ACHILLES_PLACEHOLDER>/!d
+                  s|// <MANIFEST_OHDSI_ACHILLES_PLACEHOLDER>.*|// <MANIFEST_OHDSI_ACHILLES_PLACEHOLDER>\n$MANIFEST_OHDSI_ACHILLES| 
+              }" "$HTML_FILE"
+              END
           else
-              echo "No update for OHDSI Achilles  new version is not greater than old version."
+              echo "No update for OHDSI Achilles : new version is not greater than old version."
           fi
 
           if [ $result_ohdsi_atlas -eq 0 ]; then
               echo "Updating OHDSI ATLAS manifest in HTML file."
-             # sed -i.bak "/<MANIFEST_OHDSI_ATLAS_PLACEHOLDER>/,/{/ {
-             #    /<MANIFEST_OHDSI_ATLAS_PLACEHOLDER>/!d
-             #     s|// <MANIFEST_OHDSI_ATLAS_PLACEHOLDER>.*|// <MANIFEST_OHDSI_ATLAS_PLACEHOLDER>\n$MANIFEST_OHDSI_ATLAS| 
-             #  }" "$HTML_FILE"
+              : <<'END'
+              sed -i.bak "/<MANIFEST_OHDSI_ATLAS_PLACEHOLDER>/,/{/ {
+                  /<MANIFEST_OHDSI_ATLAS_PLACEHOLDER>/!d
+                  s|// <MANIFEST_OHDSI_ATLAS_PLACEHOLDER>.*|// <MANIFEST_OHDSI_ATLAS_PLACEHOLDER>\n$MANIFEST_OHDSI_ATLAS| 
+              }" "$HTML_FILE"
+              END
           else
-              echo "No update for OHDSI ATLAS  new version is not greater than old version."
+              echo "No update for OHDSI ATLAS : new version is not greater than old version."
           fi
 
           # Commit and push changes
