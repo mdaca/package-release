@@ -143,7 +143,7 @@ jobs:
               echo "Updating Jupyter Hub manifest in HTML file."
         
           else
-              echo "No update for Jupyter Hub: new version is not greater than old version."
+              echo "No update for Jupyter Hub new version is not greater than old version."
           fi
 
           if [ $result_jupyter_http_proxy -eq 0 ]; then
@@ -151,7 +151,7 @@ jobs:
              
               
           else
-              echo "No update for Jupyter HTTP Proxy: new version is not greater than old version."
+              echo "No update for Jupyter HTTP Proxy new version is not greater than old version."
           fi
 
           if [ $result_jupyter_datascience_notebook -eq 0 ]; then
@@ -159,7 +159,7 @@ jobs:
              
               
           else
-              echo "No update for Jupyter DataScience Notebook: new version is not greater than old version."
+              echo "No update for Jupyter DataScience Notebook new version is not greater than old version."
           fi
 
           if [ $result_jupyter_pause -eq 0 ]; then
@@ -167,61 +167,54 @@ jobs:
              
               
           else
-              echo "No update for Jupyter K8s Pause: new version is not greater than old version."
+              echo "No update for Jupyter K8s Pause new version is not greater than old version."
           fi
 
           if [ $result_jupyter_kube_scheduler -eq 0 ]; then
               echo "Updating Jupyter K8s Kube Scheduler manifest in HTML file."
              
           else
-              echo "No update for Jupyter K8s Kube Scheduler : new version is not greater than old version."
+              echo "No update for Jupyter K8s Kube Scheduler  new version is not greater than old version."
           fi
 
           if [ $result_jupyter_image_awaiter -eq 0 ]; then
               echo "Updating Jupyter Image Awaiter manifest in HTML file."
              
           else
-              echo "No update for Jupyter Image Awaiter : new version is not greater than old version."
+              echo "No update for Jupyter Image Awaiter  new version is not greater than old version."
           fi
 
           if [ $result_jupyter_network_tools -eq 0 ]; then
               echo "Updating Jupyter Network Tools manifest in HTML file."
   
           else
-              echo "No update for Jupyter Network Tools : new version is not greater than old version."
+              echo "No update for Jupyter Network Tools  new version is not greater than old version."
           fi
 
           if [ $result_jupyter_secrets_sync -eq 0 ]; then
               echo "Updating Jupyter Secret Sync manifest in HTML file."
              
           else
-              echo "No update for Jupyter Secrets Sync : new version is not greater than old version."
+              echo "No update for Jupyter Secrets Sync  new version is not greater than old version."
           fi
 
           if [ $result_ohdsi_webapi -eq 0 ]; then
               echo "Updating OHDSI WEBAPI manifest in HTML file."
             
           else
-              echo "No update for OHDSI WEBAPI : new version is not greater than old version."
+              echo "No update for OHDSI WEBAPI  new version is not greater than old version."
           fi
 
           if [ $result_ohdsi_achilles -eq 0 ]; then
               echo "Updating OHDSI Achilles manifest in HTML file."
               
           else
-              echo "No update for OHDSI Achilles : new version is not greater than old version."
+              echo "No update for OHDSI Achilles  new version is not greater than old version."
           fi
 
           if [ $result_ohdsi_atlas -eq 0 ]; then
               echo "Updating OHDSI ATLAS manifest in HTML file."
              
           else
-              echo "No update for OHDSI ATLAS : new version is not greater than old version."
+              echo "No update for OHDSI ATLAS  new version is not greater than old version."
           fi
-
-          # Commit and push changes
-          # git config --local user.name "${{ github.actor }}"
-          # git config --local user.email "developer@mdaca.io"
-          # git add "$HTML_FILE"
-          # git commit -m "Update HTML file with new ECR manifests [skip ci]" || echo "No changes to commit"
-          # git push origin main
