@@ -236,7 +236,7 @@ jobs:
               echo "Updating Jupyter Network Tools manifest in HTML file."
               sed -i.bak "/<MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>/,/{/ {
                   /<MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>/!d
-                  s|// <MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>.*|// <MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>\n$MANIFEST_JUPYTER_NETWORK_TOOLS|
+                  s|// <MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>.*|// <MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>\n${MANIFEST_JUPYTER_NETWORK_TOOLS}|
               }" "$HTML_FILE"
           else
             echo "No update for Jupyter Network Tools : new version is not greater than old version."
