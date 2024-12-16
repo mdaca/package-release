@@ -74,16 +74,19 @@ jobs:
 
 
           filter_version(){
-          CURRENT_VERSION_JUPYTER_HUB=$(aws ecr describe-images --output json --repository-name $1 --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[]' | jq -r '. | select(. != "latest")')
+          CURRENT_VERSION=$(aws ecr describe-images --output json --repository-name $1 --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[]' | jq -r '. | select(. != "latest")')
 
           # Check if the result is an array or a single string
-          if echo "$CURRENT_VERSION_JUPYTER_HUB" | jq -e 'if type=="array" then .[] else . end' >/dev/null 2>&1; then
+          if echo "$CURRENT_VERSION" | jq -e 'if type=="array" then .[] else . end' >/dev/null 2>&1; then
           # If it's an array, iterate through and filter out "latest"
-          FILTERED_VERSIONS=$(echo "$CURRENT_VERSION_JUPYTER_HUB" | jq -r 'if type=="array" then .[] else . end' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$')
+          FILTERED_VERSIONS=$(echo "$CURRENT_VERSION" | jq -r 'if type=="array" then .[] else . end' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?$')
           else
-          # If it's a single string
-          FILTERED_VERSIONS="$CURRENT_VERSION_JUPYTER_HUB"
+            # If it's a single string
+            FILTERED_VERSIONS="$CURRENT_VERSION"
+            # Apply the filter as well, in case it's a single version string
+            FILTERED_VERSIONS=$(echo "$FILTERED_VERSIONS" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?$')
           fi
+
           echo "$FILTERED_VERSIONS"
           }
 
@@ -230,18 +233,15 @@ jobs:
           
           ls -la $HTML_FILE
           if [ $result_jupyter_network_tools -eq 0 ]; then
-          echo "Updating Jupyter Network Tools manifest in HTML file."
-    
-          # Escape the MANIFEST_JUPYTER_NETWORK_TOOLS variable for safe sed usage
-          escaped_manifest=$(printf '%s\n' "$MANIFEST_JUPYTER_NETWORK_TOOLS" | sed 's/[&/\]/\\&/g')
-          sed -i.bak "/<MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>/,/{/ {
-          /<MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>/!d
-          s|// <MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>.*|// <MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>\n$escaped_manifest|
-          }" "$HTML_FILE"
-           else
-          echo "No update for Jupyter Network Tools : new version is not greater than old version."
-          fi 
-
+              echo "Updating Jupyter Network Tools manifest in HTML file."
+              sed -i.bak "/<MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>/,/{/ {
+                  /<MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>/!d
+                  s|// <MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>.*|// <MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>\n$MANIFEST_JUPYTER_NETWORK_TOOLS|
+              }" "$HTML_FILE"
+          else
+            echo "No update for Jupyter Network Tools : new version is not greater than old version."
+          fi
+          
           if [ $result_jupyter_secrets_sync -eq 0 ]; then
               echo "Updating Jupyter Secret Sync manifest in HTML file."
               sed -i.bak "/<MANIFEST_JUPYTER_SECRETS_SYNC_PLACEHOLDER>/,/{/ {
