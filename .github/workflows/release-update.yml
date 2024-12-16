@@ -237,8 +237,7 @@ jobs:
               ESCAPED_MANIFEST=$(printf '%s' "$MANIFEST_JUPYTER_NETWORK_TOOLS" | sed 's/[&/]/\\&/g')
               sed -i.bak "/<MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>/,/{/ {
                   /<MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>/!d
-                  s|// <MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>.*|//
-                  <MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>\n${ESCAPED_MANIFEST}| 
+                  s|// <MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>.*|// <MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>\n${ESCAPED_MANIFEST}| 
               }" "$HTML_FILE"
           else
             echo "No update for Jupyter Network Tools : new version is not greater than old version."
