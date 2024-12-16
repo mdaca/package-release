@@ -232,7 +232,9 @@ jobs:
           else
               echo "No update for Jupyter Image Awaiter : new version is not greater than old version."
           fi
+          
           ls -la $HTML_FILE
+          
           if [ $result_jupyter_network_tools -eq 0 ]; then
               echo "Updating Jupyter Network Tools manifest in HTML file."
               sed -i.bak "/<MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>/,/{/ {
@@ -242,8 +244,7 @@ jobs:
           else
               echo "No update for Jupyter Network Tools : new version is not greater than old version."
           fi
-          ls -la $HTML_FILE
-          
+   
           if [ $result_jupyter_secrets_sync -eq 0 ]; then
               echo "Updating Jupyter Secret Sync manifest in HTML file."
               sed -i.bak "/<MANIFEST_JUPYTER_SECRETS_SYNC_PLACEHOLDER>/,/{/ {
