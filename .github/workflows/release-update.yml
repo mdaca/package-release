@@ -72,27 +72,46 @@ jobs:
           MANIFEST_OHDSI_ACHILLES=$(aws ecr batch-get-image --repository-name "$OHDSI_ACHILLES_REPOSITORY_NAME" --region us-east-2 --image-ids imageTag="$IMAGE_TAG" --query 'images[].imageManifest' --output text)
 
 
-          CURRENT_VERSION_JUPYTER_HUB=$(aws ecr describe-images --output json --repository-name $JUPYTER_HUB_REPOSITORY_NAME --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[]' | jq -r '.[]' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$')
+          filter_version(){
+          CURRENT_VERSION_JUPYTER_HUB=$(aws ecr describe-images --output json --repository-name $1 --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[]' | jq -r '. | select(. != "latest")')
+
+          # Check if the result is an array or a single string
+          if echo "$CURRENT_VERSION_JUPYTER_HUB" | jq -e 'if type=="array" then .[] else . end' >/dev/null 2>&1; then
+          # If it's an array, iterate through and filter out "latest"
+          FILTERED_VERSIONS=$(echo "$CURRENT_VERSION_JUPYTER_HUB" | jq -r 'if type=="array" then .[] else . end' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$')
+          else
+          # If it's a single string, ensure it meets the version pattern
+          if [[ "$CURRENT_VERSION_JUPYTER_HUB" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          FILTERED_VERSIONS="$CURRENT_VERSION_JUPYTER_HUB"
+          else
+          FILTERED_VERSIONS=""
+          fi
+          fi
+
+          echo "$FILTERED_VERSIONS"
+          }
+
+          CURRENT_VERSION_JUPYTER_HUB=$(filter_version $JUPYTER_HUB_REPOSITORY_NAME)
           echo $CURRENT_VERSION_JUPYTER_HUB    
-          CURRENT_VERSION_JUPYTER_HTTP_PROXY=$(aws ecr describe-images --output json --repository-name $JUPYTER_HTTP_PROXY_REPOSITORY_NAME --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[]' | jq -r '.[]' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$')
+          CURRENT_VERSION_JUPYTER_HTTP_PROXY=$(filter_version $JUPYTER_HTTP_PROXY_REPOSITORY_NAME)
           echo $CURRENT_VERSION_JUPYTER_HTTP_PROXY
-          CURRENT_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK=$(aws ecr describe-images --output json --repository-name $JUPYTER_DATASCIENCE_NOTEBOOK_REPOSITORY_NAME --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[]' | jq -r '.[]' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$')
+          CURRENT_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK=$(filter_version $JUPYTER_DATASCIENCE_NOTEBOOK_REPOSITORY_NAME)
           echo $CURRENT_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK
-          CURRENT_VERSION_JUPYTER_PAUSE=$(aws ecr describe-images --output json --repository-name $JUPYTER_PAUSE_REPOSITORY_NAME --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[1]' | jq -r '.[]' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$')
+          CURRENT_VERSION_JUPYTER_PAUSE=$(filter_version $JUPYTER_PAUSE_REPOSITORY_NAME)
           echo $CURRENT_VERSION_JUPYTER_PAUSE
-          CURRENT_VERSION_JUPYTER_KUBE_SCHEDULER=$(aws ecr describe-images --output json --repository-name $JUPYTER_KUBE_SCHEDULER_REPOSITORY_NAME --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[]' | jq -r '.[]' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$')
+          CURRENT_VERSION_JUPYTER_KUBE_SCHEDULER=$(filter_version $JUPYTER_KUBE_SCHEDULER_REPOSITORY_NAME)
           echo $CURRENT_VERSION_JUPYTER_KUBE_SCHEDULER
-          CURRENT_VERSION_JUPYTER_IMAGE_AWAITER=$(aws ecr describe-images --output json --repository-name $JUPYTER_IMAGE_AWAITER_REPOSITORY_NAME --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[]' | jq -r '.[]' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$')
+          CURRENT_VERSION_JUPYTER_IMAGE_AWAITER=$(filter_version $JUPYTER_IMAGE_AWAITER_REPOSITORY_NAME)
           echo $CURRENT_VERSION_JUPYTER_IMAGE_AWAITER
-          CURRENT_VERSION_JUPYTER_NETWORK_TOOLS=$(aws ecr describe-images --output json --repository-name $JUPYTER_NETWORK_TOOLS_REPOSITORY_NAME --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[]' | jq -r '.[]' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$')
+          CURRENT_VERSION_JUPYTER_NETWORK_TOOLS=$(filter_version $JUPYTER_NETWORK_TOOLS_REPOSITORY_NAME)
           echo $CURRENT_VERSION_JUPYTER_NETWORK_TOOLS
-          CURRENT_VERSION_JUPYTER_SECRETS_SYNC=$(aws ecr describe-images --output json --repository-name $JUPYTER_SECRETS_SYNC_REPOSITORY_NAME --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[]' | jq -r '.[]' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$')
+          CURRENT_VERSION_JUPYTER_SECRETS_SYNC=$(filter_version $JUPYTER_SECRETS_SYNC_REPOSITORY_NAME)
           echo $CURRENT_VERSION_JUPYTER_SECRETS_SYNC
-          CURRENT_VERSION_OHDSI_WEBAPI=$(aws ecr describe-images --output json --repository-name $OHDSI_WEBAPI_REPOSITORY_NAME --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[]' | jq -r '.[]' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$')
+          CURRENT_VERSION_OHDSI_WEBAPI=$(filter_version $OHDSI_WEBAPI_REPOSITORY_NAME)
           echo $CURRENT_VERSION_OHDSI_WEBAPI
-          CURRENT_VERSION_OHDSI_ATLAS=$(aws ecr describe-images --output json --repository-name $OHDSI_ATLAS_REPOSITORY_NAME --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[]' | jq -r '.[]' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$')
+          CURRENT_VERSION_OHDSI_ATLAS=$(filter_version $OHDSI_ATLAS_REPOSITORY_NAME)
           echo $CURRENT_VERSION_OHDSI_ATLAS
-          CURRENT_VERSION_OHDSI_ACHILLES=$(aws ecr describe-images --output json --repository-name $OHDSI_ACHILLES_REPOSITORY_NAME --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[]' | jq -r '.[]' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$')
+          CURRENT_VERSION_OHDSI_ACHILLES=$(filter_version $OHDSI_ACHILLES_REPOSITORY_NAME)
           echo $CURRENT_VERSION_OHDSI_ACHILLES
 
           # Check if the commands were successful
