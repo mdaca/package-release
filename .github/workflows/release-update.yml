@@ -266,21 +266,23 @@ jobs:
 
           if [ $result_ohdsi_achilles -eq 0 ]; then
               echo "Updating OHDSI Achilles manifest in HTML file."
-              sed -i.bak "/<MANIFEST_OHDSI_ACHILLES_PLACEHOLDER>/,/{/ {
-                  /<MANIFEST_OHDSI_ACHILLES_PLACEHOLDER>/!d
-                  s|// <MANIFEST_OHDSI_ACHILLES_PLACEHOLDER>.*|// <MANIFEST_OHDSI_ACHILLES_PLACEHOLDER>\n$MANIFEST_OHDSI_ACHILLES| 
-              }" "$HTML_FILE"
-          else
+               ESCAPED_MANIFEST=$(printf '%s' "$MANIFEST_OHDSI_ACHILLES" | sed 's/[&/\]/\\&/g')
+            awk -v MANIFEST_OHDSI_ACHILLES="$ESCAPED_MANIFEST" '{
+            gsub(/MANIFEST_OHDSI_ACHILLES_PLACEHOLDER>/, "<MANIFEST_OHDSI_ACHILLES_PLACEHOLDER>\n" MANIFEST_OHDSI_ACHILLES);
+            print;
+            }' "$HTML_FILE" > "$HTML_FILE.tmp" && mv "$HTML_FILE.tmp" "$HTML_FILE"
+            else            
               echo "No update for OHDSI Achilles : new version is not greater than old version."
           fi
 
           if [ $result_ohdsi_atlas -eq 0 ]; then
               echo "Updating OHDSI ATLAS manifest in HTML file."
-              sed -i.bak "/<MANIFEST_OHDSI_ATLAS_PLACEHOLDER>/,/{/ {
-                  /<MANIFEST_OHDSI_ATLAS_PLACEHOLDER>/!d
-                  s|// <MANIFEST_OHDSI_ATLAS_PLACEHOLDER>.*|// <MANIFEST_OHDSI_ATLAS_PLACEHOLDER>\n$MANIFEST_OHDSI_ATLAS| 
-              }" "$HTML_FILE"
-          else
+               ESCAPED_MANIFEST=$(printf '%s' "$MANIFEST_OHDSI_ATLAS" | sed 's/[&/\]/\\&/g')
+          awk -v MANIFEST_OHDSI_ATLAS="$ESCAPED_MANIFEST" '{
+          gsub(/MANIFEST_OHDSI_ATLAS_PLACEHOLDER>/, "<MANIFEST_OHDSI_ATLAS_PLACEHOLDER>\n" MANIFEST_OHDSI_ATLAS);
+          print;
+          }' "$HTML_FILE" > "$HTML_FILE.tmp" && mv "$HTML_FILE.tmp" "$HTML_FILE"
+          else       
               echo "No update for OHDSI ATLAS : new version is not greater than old version."
           fi
           ls -la $HTML_FILE
