@@ -234,9 +234,11 @@ jobs:
           ls -la $HTML_FILE
           if [ $result_jupyter_network_tools -eq 0 ]; then
               echo "Updating Jupyter Network Tools manifest in HTML file."
+              ESCAPED_MANIFEST=$(printf '%s' "$MANIFEST_JUPYTER_NETWORK_TOOLS" | sed 's/[&/]/\\&/g')
               sed -i.bak "/<MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>/,/{/ {
                   /<MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>/!d
-                  s|// <MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>.*|// <MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>\n${MANIFEST_JUPYTER_NETWORK_TOOLS}|
+                  s|// <MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>.*|//
+                  <MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>\n${ESCAPED_MANIFEST}| 
               }" "$HTML_FILE"
           else
             echo "No update for Jupyter Network Tools : new version is not greater than old version."
