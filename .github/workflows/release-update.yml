@@ -282,7 +282,7 @@ jobs:
               echo "No update for OHDSI ATLAS : new version is not greater than old version."
           fi
 
-          rm -f "HTML_FILE.bak"
+          rm -f "$HTML_FILE.bak"
 
           # Commit and push changes
           git config --local user.name "${{ github.actor }}"
