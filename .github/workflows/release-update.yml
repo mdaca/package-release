@@ -255,10 +255,11 @@ jobs:
 
           if [ $result_ohdsi_webapi -eq 0 ]; then
               echo "Updating OHDSI WEBAPI manifest in HTML file."
-              sed -i.bak "/<MANIFEST_OHDSI_WEBAPI_PLACEHOLDER>/,/{/ {
-                  /<MANIFEST_OHDSI_WEBAPI_PLACEHOLDER>/!d
-                  s|// <MANIFEST_OHDSI_WEBAPI_PLACEHOLDER>.*|// <MANIFEST_OHDSI_WEBAPI_PLACEHOLDER>\n$MANIFEST_OHDSI_WEBAPI| 
-              }" "$HTML_FILE"
+          ESCAPED_MANIFEST=$(printf '%s' "$MANIFEST_OHDSI_WEBAPI" | sed 's/[&/\]/\\&/g')
+          awk -v MANIFEST_OHDSI_WEBAPI="$ESCAPED_MANIFEST" '{
+          gsub(/MANIFEST_OHDSI_WEBAPI_PLACEHOLDER>/, "<MANIFEST_OHDSI_WEBAPI_PLACEHOLDER>\n" MANIFEST_OHDSI_WEBAPI);
+          print;
+          }' "$HTML_FILE" > "$HTML_FILE.tmp" && mv "$HTML_FILE.tmp" "$HTML_FILE"
           else
               echo "No update for OHDSI WEBAPI : new version is not greater than old version."
           fi
