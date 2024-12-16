@@ -281,9 +281,9 @@ jobs:
           else
               echo "No update for OHDSI ATLAS : new version is not greater than old version."
           fi
-
+          ls -la $HTML_FILE
           rm -f "$HTML_FILE.bak"
-
+    
           # Commit and push changes
           git config --local user.name "${{ github.actor }}"
           git config --local user.email "developer@mdaca.io"
