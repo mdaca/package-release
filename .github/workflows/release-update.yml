@@ -290,3 +290,4 @@ jobs:
           git add "$HTML_FILE"
           git commit -m "Update HTML file with new ECR manifests [skip ci]" || echo "No changes to commit"
           git push origin iryna_test
+          
