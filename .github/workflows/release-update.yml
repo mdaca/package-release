@@ -173,60 +173,66 @@ jobs:
                     # Update the HTML file if the new version is greater
           if [ $result_jupyter_hub -eq 0 ]; then
               echo "Updating Jupyter Hub manifest in HTML file."
-              sed -i.bak "/<MANIFEST_JUPYTER_HUB_PLACEHOLDER>/,/{/ {
-                  /<MANIFEST_JUPYTER_HUB_PLACEHOLDER>/!d
-                  s|// <MANIFEST_JUPYTER_HUB_PLACEHOLDER>.*|// <MANIFEST_JUPYTER_HUB_PLACEHOLDER>\n$MANIFEST_JUPYTER_HUB| 
-              }" "$HTML_FILE"
+          ESCAPED_MANIFEST=$(printf '%s' "$MANIFEST_JUPYTER_HUB" | sed 's/[&/\]/\\&/g')
+          awk -v MANIFEST_JUPYTER_HUB="$ESCAPED_MANIFEST" '{
+          gsub(/<MANIFEST_JUPYTER_HUB_PLACEHOLDER>/, "<MANIFEST_JUPYTER_HUB_PLACEHOLDER>\n" MANIFEST_JUPYTER_HUB);
+          print;
+          }' "$HTML_FILE" > "$HTML_FILE.tmp" && mv "$HTML_FILE.tmp" "$HTML_FILE"
           else
               echo "No update for Jupyter Hub: new version is not greater than old version."
           fi
 
           if [ $result_jupyter_http_proxy -eq 0 ]; then
               echo "Updating Jupyter HTTP Proxy manifest in HTML file."
-              sed -i.bak "/<MANIFEST_JUPYTER_HTTP_PROXY_PLACEHOLDER>/,/{/ {
-                  /<MANIFEST_JUPYTER_JUPYTER_HTTP_PROXY_PLACEHOLDER>/!d
-                  s|// <MANIFEST_JUPYTER_HTTP_PROXY_PLACEHOLDER>.*|// <MANIFEST_JUPYTER_HTTP_PROXY_PLACEHOLDER>\n$MANIFEST_JUPYTER_HTTP_PROXY| 
-              }" "$HTML_FILE"
+                         ESCAPED_MANIFEST=$(printf '%s' "$MANIFEST_JUPYTER_HTTP_PROXY" | sed 's/[&/\]/\\&/g')
+          awk -v MANIFEST_JUPYTER_HTTP_PROXY="$ESCAPED_MANIFEST" '{
+          gsub(/<MANIFEST_JUPYTER_HTTP_PROXY_PLACEHOLDER>/, "<MANIFEST_JUPYTER_HTTP_PROXY_PLACEHOLDER>\n" MANIFEST_JUPYTER_HTTP_PROXY);
+          print;
+          }' "$HTML_FILE" > "$HTML_FILE.tmp" && mv "$HTML_FILE.tmp" "$HTML_FILE"
           else
               echo "No update for Jupyter HTTP Proxy: new version is not greater than old version."
           fi
 
           if [ $result_jupyter_datascience_notebook -eq 0 ]; then
               echo "Updating Jupyter DataScience Notebook manifest in HTML file."
-              sed -i.bak "/<MANIFEST_JUPYTER_DATASCIENCE_NOTEBOOK_PLACEHOLDER>/,/{/ {
-                  /<MANIFEST_JUPYTER_DATASCIENCE_NOTEBOOK_PLACEHOLDER>/!d
-                  s|// <MANIFEST_JUPYTER_DATASCIENCE_NOTEBOOK_PLACEHOLDER>.*|// <MANIFEST_JUPYTER_DATASCIENCE_NOTEBOOK_PLACEHOLDER>\n$MANIFEST_JUPYTER_DATASCIENCE_NOTEBOOK| 
-              }" "$HTML_FILE"
+          ESCAPED_MANIFEST=$(printf '%s' "$MANIFEST_JUPYTER_DATASCIENCE_NOTEBOOK" | sed 's/[&/\]/\\&/g')
+          awk -v MANIFEST_JUPYTER_DATASCIENCE_NOTEBOOK="$ESCAPED_MANIFEST" '{
+          gsub(/<MANIFEST_JUPYTER_DATASCIENCE_NOTEBOOK_PLACEHOLDER>/, "<MANIFEST_JUPYTER_DATASCIENCE_NOTEBOOK_PLACEHOLDER>\n" MANIFEST_JUPYTER_DATASCIENCE_NOTEBOOK);
+          print;
+          }' "$HTML_FILE" > "$HTML_FILE.tmp" && mv "$HTML_FILE.tmp" "$HTML_FILE"  
           else
               echo "No update for Jupyter DataScience Notebook: new version is not greater than old version."
           fi
 
           if [ $result_jupyter_pause -eq 0 ]; then
               echo "Updating Jupyter k8s Pause manifest in HTML file."
-              sed -i.bak "/<MANIFEST_JUPYTER_PAUSE_PLACEHOLDER>/,/{/ {
-                  /<MANIFEST_JUPYTER_PAUSE_PLACEHOLDER>/!d
-                  s|// <MANIFEST_JUPYTER_PAUSE_PLACEHOLDER>.*|// <MANIFEST_JUPYTER_PAUSE_PLACEHOLDER>\n$MANIFEST_JUPYTER_PAUSE| 
-              }" "$HTML_FILE"
+          ESCAPED_MANIFEST=$(printf '%s' "$MANIFEST_JUPYTER_PAUSE" | sed 's/[&/\]/\\&/g')
+          awk -v MANIFEST_JUPYTER_PAUSE="$ESCAPED_MANIFEST" '{
+          gsub(/<MANIFEST_JUPYTER_PAUSE_PLACEHOLDER>/, "<MANIFEST_JUPYTER_PAUSE_PLACEHOLDER>\n" MANIFEST_JUPYTER_PAUSE);
+          print;
+          }' "$HTML_FILE" > "$HTML_FILE.tmp" && mv "$HTML_FILE.tmp" "$HTML_FILE"
           else
               echo "No update for Jupyter K8s Pause: new version is not greater than old version."
           fi
 
           if [ $result_jupyter_kube_scheduler -eq 0 ]; then
               echo "Updating Jupyter K8s Kube Scheduler manifest in HTML file."
-              sed -i.bak "/<MANIFEST_JUPYTER_KUBE_SCHEDULER_PLACEHOLDER>/,/{/ {
-                  /<MANIFEST_JUPYTER_KUBE_SCHEDULER_PLACEHOLDER>/!d
-                  s|// <MANIFEST_JUPYTER_KUBE_SCHEDULER_PLACEHOLDER>.*|// <MANIFEST_JUPYTER_KUBE_SCHEDULER_PLACEHOLDER>\n$MANIFEST_JUPYTER_KUBE_SCHEDULER| 
-              }" "$HTML_FILE"
+          ESCAPED_MANIFEST=$(printf '%s' "$MANIFEST_JUPYTER_KUBE_SCHEDULER" | sed 's/[&/\]/\\&/g')
+          awk -v MANIFEST_JUPYTER_KUBE_SCHEDULER="$ESCAPED_MANIFEST" '{
+          gsub(/<MANIFEST_JUPYTER_KUBE_SCHEDULER_PLACEHOLDER>/, "<MANIFEST_JUPYTER_KUBE_SCHEDULER_PLACEHOLDER>\n" MANIFEST_JUPYTER_KUBE_SCHEDULER);
+          print;
+          }' "$HTML_FILE" > "$HTML_FILE.tmp" && mv "$HTML_FILE.tmp" "$HTML_FILE"
           else
               echo "No update for Jupyter K8s Kube Scheduler : new version is not greater than old version."
           fi
 
           if [ $result_jupyter_image_awaiter -eq 0 ]; then
               echo "Updating Jupyter Image Awaiter manifest in HTML file."
-              sed -i.bak "/<MANIFEST_JUPYTER_IMAGE_AWAITER_PLACEHOLDER>/,/{/ {
-                  /<MANIFEST_JUPYTER_IMAGE_AWAITER_PLACEHOLDER>/!d
-                  s|// <MANIFEST_JUPYTER_IMAGE_AWAITER_PLACEHOLDER>.*|// <MANIFEST_JUPYTER_IMAGE_AWAITER_PLACEHOLDER>\n$MANIFEST_JUPYTER_IMAGE_AWAITER| 
-              }" "$HTML_FILE"
+          ESCAPED_MANIFEST=$(printf '%s' "$MANIFEST_JUPYTER_IMAGE_AWAITER" | sed 's/[&/\]/\\&/g')
+          awk -v MANIFEST_JUPYTER_IMAGE_AWAITER="$ESCAPED_MANIFEST" '{
+          gsub(/<MANIFEST_JUPYTER_IMAGE_AWAITER_PLACEHOLDER>/, "<MANIFEST_JUPYTER_IMAGE_AWAITER_PLACEHOLDER>\n" MANIFEST_JUPYTER_IMAGE_AWAITER);
+          print;
+          }' "$HTML_FILE" > "$HTML_FILE.tmp" && mv "$HTML_FILE.tmp" "$HTML_FILE"   
           else
               echo "No update for Jupyter Image Awaiter : new version is not greater than old version."
           fi
@@ -245,10 +251,11 @@ jobs:
           
           if [ $result_jupyter_secrets_sync -eq 0 ]; then
               echo "Updating Jupyter Secret Sync manifest in HTML file."
-              sed -i.bak "/<MANIFEST_JUPYTER_SECRETS_SYNC_PLACEHOLDER>/,/{/ {
-                  /<MANIFEST_JUPYTER_SECRETS_SYNC_PLACEHOLDER>/!d
-                  s|// <MANIFEST_JUPYTER_SECRETS_SYNC_PLACEHOLDER>.*|// <MANIFEST_JUPYTER_SECRETS_SYNC_PLACEHOLDER>\n$MANIFEST_JUPYTER_SECRETS_SYNC| 
-              }" "$HTML_FILE"
+           ESCAPED_MANIFEST=$(printf '%s' "$MANIFEST_JUPYTER_SECRETS_SYNC" | sed 's/[&/\]/\\&/g')
+          awk -v MANIFEST_JUPYTER_SECRETS_SYNC="$ESCAPED_MANIFEST" '{
+          gsub(/<MANIFEST_JUPYTER_SECRETS_SYNC_PLACEHOLDER>/, "<MANIFEST_JUPYTER_SECRETS_SYNC_PLACEHOLDER>\n" MANIFEST_JUPYTER_SECRETS_SYNC);
+          print;
+          }' "$HTML_FILE" > "$HTML_FILE.tmp" && mv "$HTML_FILE.tmp" "$HTML_FILE"
           else
               echo "No update for Jupyter Secrets Sync : new version is not greater than old version."
           fi
