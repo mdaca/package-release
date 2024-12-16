@@ -233,14 +233,14 @@ jobs:
           
           ls -la $HTML_FILE
           if [ $result_jupyter_network_tools -eq 0 ]; then
-              echo "Updating Jupyter Network Tools manifest in HTML file."
-              ESCAPED_MANIFEST=$(printf '%s' "$MANIFEST_JUPYTER_NETWORK_TOOLS" | sed 's/[&/]/\\&/g')
-              sed -i.bak "/<MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>/,/{/ {
-                  /<MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>/!d
-                  s|// <MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>.*|// <MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>\n${ESCAPED_MANIFEST}| 
-              }" "$HTML_FILE"
+          echo "Updating Jupyter Network Tools manifest in HTML file."
+          ESCAPED_MANIFEST=$(printf '%s' "$MANIFEST_JUPYTER_NETWORK_TOOLS" | sed 's/[&/\]/\\&/g')
+          awk -v MANIFEST_JUPYTER_NETWORK_TOOLS="$ESCAPED_MANIFEST" '{
+          gsub(/<MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>/, "<MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>\n" MANIFEST_JUPYTER_NETWORK_TOOLS);
+          print;
+          }' "$HTML_FILE" > "$HTML_FILE.tmp" && mv "$HTML_FILE.tmp" "$HTML_FILE"
           else
-            echo "No update for Jupyter Network Tools : new version is not greater than old version."
+          echo "No update for Jupyter Network Tools : new version is not greater than old version."
           fi
           
           if [ $result_jupyter_secrets_sync -eq 0 ]; then
