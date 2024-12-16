@@ -59,7 +59,8 @@ jobs:
           echo $JUPYTER_PAUSE_REPOSITORY_NAME
           MANIFEST_PAUSE_PROXY=$(aws ecr batch-get-image --repository-name "$JUPYTER_PAUSE_REPOSITORY_NAME" --region us-east-2 --image-ids imageTag="$IMAGE_TAG" --query 'images[].imageManifest' --output text)
           echo $JUPYTER_NETWORK_TOOLS_REPOSITORY_NAME
-          MANIFEST_NETWORK_TOOLS=$(aws ecr batch-get-image --repository-name "$JUPYTER_NETWORK_TOOLS_REPOSITORY_NAME" --region us-east-2 --image-ids imageTag="$IMAGE_TAG" --query 'images[].imageManifest' --output text)
+          MANIFEST_JUPYTER_NETWORK_TOOLS=$(aws ecr batch-get-image --repository-name "$JUPYTER_NETWORK_TOOLS_REPOSITORY_NAME" --region us-east-2 --image-ids imageTag="$IMAGE_TAG" --query 'images[].imageManifest' --output text)
+          echo $MANIFEST_JUPYTER_NETWORK_TOOLS
           echo $JUPYTER_SECRETS_SYNC_REPOSITORY_NAME
           MANIFEST_SECRETS_SYNC=$(aws ecr batch-get-image --repository-name "$JUPYTER_SECRETS_SYNC_REPOSITORY_NAME" --region us-east-2 --image-ids imageTag="$IMAGE_TAG" --query 'images[].imageManifest' --output text)
           echo $JUPYTER_KUBE_SCHEDULER_REPOSITORY_NAME
@@ -231,7 +232,7 @@ jobs:
           else
               echo "No update for Jupyter Image Awaiter : new version is not greater than old version."
           fi
-
+          ls -la $HTML_FILE
           if [ $result_jupyter_network_tools -eq 0 ]; then
               echo "Updating Jupyter Network Tools manifest in HTML file."
               sed -i.bak "/<MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>/,/{/ {
@@ -241,7 +242,8 @@ jobs:
           else
               echo "No update for Jupyter Network Tools : new version is not greater than old version."
           fi
-
+          ls -la $HTML_FILE
+          
           if [ $result_jupyter_secrets_sync -eq 0 ]; then
               echo "Updating Jupyter Secret Sync manifest in HTML file."
               sed -i.bak "/<MANIFEST_JUPYTER_SECRETS_SYNC_PLACEHOLDER>/,/{/ {
