@@ -49,7 +49,7 @@ jobs:
           # Fetch the image manifest from ECR for each image
           echo $JUPYTER_HUB_REPOSITORY_NAME
           MANIFEST_JUPYTER_HUB=$(aws ecr batch-get-image --repository-name "$JUPYTER_HUB_REPOSITORY_NAME" --region us-east-2 --image-ids imageTag="$IMAGE_TAG" --query 'images[].imageManifest' --output text)
-          echo $MANIFEST_JUPYTER_HUB
+          #echo $MANIFEST_JUPYTER_HUB
           echo $JUPYTER_HTTP_PROXY_REPOSITORY_NAME
           MANIFEST_JUPYTER_HTTP_PROXY=$(aws ecr batch-get-image --repository-name "$JUPYTER_HTTP_PROXY_REPOSITORY_NAME" --region us-east-2 --image-ids imageTag="$IMAGE_TAG"  --query 'images[].imageManifest' --output text)
           echo $JUPYTER_DATASCIENCE_NOTEBOOK_REPOSITORY_NAME
@@ -60,7 +60,7 @@ jobs:
           MANIFEST_PAUSE_PROXY=$(aws ecr batch-get-image --repository-name "$JUPYTER_PAUSE_REPOSITORY_NAME" --region us-east-2 --image-ids imageTag="$IMAGE_TAG" --query 'images[].imageManifest' --output text)
           echo $JUPYTER_NETWORK_TOOLS_REPOSITORY_NAME
           MANIFEST_JUPYTER_NETWORK_TOOLS=$(aws ecr batch-get-image --repository-name "$JUPYTER_NETWORK_TOOLS_REPOSITORY_NAME" --region us-east-2 --image-ids imageTag="$IMAGE_TAG" --query 'images[].imageManifest' --output text)
-          echo $MANIFEST_JUPYTER_NETWORK_TOOLS
+          #echo $MANIFEST_JUPYTER_NETWORK_TOOLS
           echo $JUPYTER_SECRETS_SYNC_REPOSITORY_NAME
           MANIFEST_SECRETS_SYNC=$(aws ecr batch-get-image --repository-name "$JUPYTER_SECRETS_SYNC_REPOSITORY_NAME" --region us-east-2 --image-ids imageTag="$IMAGE_TAG" --query 'images[].imageManifest' --output text)
           echo $JUPYTER_KUBE_SCHEDULER_REPOSITORY_NAME
@@ -74,7 +74,10 @@ jobs:
 
 
           filter_version(){
-          CURRENT_VERSION=$(aws ecr describe-images --output json --repository-name $1 --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[]' | jq -r '. | select(. != "latest")')
+          rep_name=$1
+          describe_image=$(aws ecr describe-images --output json --repository-name $rep_name --query 'sort_by(imageDetails,& imagePushedAt)[-1]') 
+          echo $describe_image
+          CURRENT_VERSION=$(aws ecr describe-images --output json --repository-name $rep_name --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[]' | jq -r '. | select(. != "latest")')
 
           # Check if the result is an array or a single string
           if echo "$CURRENT_VERSION" | jq -e 'if type=="array" then .[] else . end' >/dev/null 2>&1; then
