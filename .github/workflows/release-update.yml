@@ -89,10 +89,11 @@ jobs:
 
           filter_version(){
           rep_name=$1
-          describe_image=$(aws ecr describe-images --output json --repository-name $rep_name --query 'sort_by(imageDetails,& imagePushedAt)[-1]') 
+          describe_image=$(aws ecr describe-images --output json --repository-name $rep_name --query 'sort_by(imageDetails,& imagePushedAt)[-1]'| jq -r '.imageTags[] | select(. != "latest")') 
           echo $describe_image
-          CURRENT_VERSION=$(echo "$describe_image" | jq -r '.imageTags[] | select(. != "latest")')
-          echo "$CURRENT_VERSION"
+          CURRENT_VERSION=$(echo "$describe_image" | awk '{print $NF}')
+          
+          echo "$CURRENT_VERSION" 
           }
 
           CURRENT_VERSION_JUPYTER_HUB=$(filter_version $JUPYTER_HUB_REPOSITORY_NAME)
