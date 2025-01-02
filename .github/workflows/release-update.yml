@@ -91,7 +91,8 @@ jobs:
           rep_name=$1
           describe_image=$(aws ecr describe-images --output json --repository-name $rep_name --query 'sort_by(imageDetails,& imagePushedAt)[-1]') 
           version=$(echo $describe_image | jq -r '.imageTags[] | select(. != "latest")')
-          echo "$version" 
+          date=$(echo $describe_image | jq -r '.imagePushedAt)
+          echo "$date" 
           }
           echo "the versions start"   
           CURRENT_VERSION_JUPYTER_HUB=$(filter_version $JUPYTER_HUB_REPOSITORY_NAME)
