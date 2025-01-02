@@ -90,7 +90,7 @@ jobs:
           filter_version(){
           rep_name=$1
           describe_image=$(aws ecr describe-images --output json --repository-name $rep_name --query 'sort_by(imageDetails,& imagePushedAt)[-1]') 
-          version=$(echo describe_image | jq -r '.imageTags[] | select(. != "latest")')
+          version=$(echo $describe_image | jq -r '.imageTags[] | select(. != "latest")')
           echo "$version" 
           }
           echo "the versions start"   
