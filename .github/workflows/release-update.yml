@@ -91,20 +91,8 @@ jobs:
           rep_name=$1
           describe_image=$(aws ecr describe-images --output json --repository-name $rep_name --query 'sort_by(imageDetails,& imagePushedAt)[-1]') 
           echo $describe_image
-          CURRENT_VERSION=$(echo "$describe_image" | awk '{print $NF}')
+          CURRENT_VERSION=$(echo "$describe_image" | jq -r '.imageTags[] | select(. != "latest")')
           echo "$CURRENT_VERSION"
-          # Check if the result is an array or a single string
-          if echo "$CURRENT_VERSION" | jq -e 'if type=="array" then .[] else . end' >/dev/null 2>&1; then
-          # If it's an array, iterate through and filter out "latest"
-          FILTERED_VERSIONS=$(echo "$CURRENT_VERSION" | jq -r 'if type=="array" then .[] else . end' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?$')
-          else
-            # If it's a single string
-            FILTERED_VERSIONS="$CURRENT_VERSION"
-            # Apply the filter as well, in case it's a single version string
-            FILTERED_VERSIONS=$(echo "$FILTERED_VERSIONS" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?$')
-          fi
-
-          echo "$FILTERED_VERSIONS"
           }
 
           CURRENT_VERSION_JUPYTER_HUB=$(filter_version $JUPYTER_HUB_REPOSITORY_NAME)
