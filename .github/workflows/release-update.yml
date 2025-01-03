@@ -93,8 +93,8 @@ jobs:
           version=$(echo $describe_image | jq -r '.imageTags[] | select(. != "latest")')
           date=$(echo "$describe_image" | jq -r '.imagePushedAt')
           formatted_date=$(date -d "$date" +"%B %d, %Y")
-          echo "$formatted_date"
-          #echo $version 
+          #echo "$formatted_date"
+          echo $version 
           }
           echo "the versions start"   
           CURRENT_VERSION_JUPYTER_HUB=$(filter_version $JUPYTER_HUB_REPOSITORY_NAME)
