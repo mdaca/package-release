@@ -205,31 +205,10 @@ jobs:
           
           }
 
-          # Escape new version for use in sed
-          #ESCAPED_VERSION=$(printf '%s' "$new_version" | sed 's/[&/\]/\\&/g')
-
-          # Escape new date for use in sed
-          #ESCAPED_DATE=$(printf '%s' "$new_date" | sed 's/[&/\]/\\&/g')
-
-          # Use AWK to substitute the version
-          #awk -v IMAGE_NAME="$image_name" -v NEW_VERSION="$ESCAPED_VERSION" '{
-          #gsub(/data-version="[^"]+"/, "data-version=\""NEW_VERSION"\"");
-          #print;
-          #}' "$HTML_FILE" > "$HTML_FILE.tmp" && mv "$HTML_FILE.tmp" "$HTML_FILE"
-
-          # Use AWK to substitute the date
-          #awk -v IMAGE_NAME="$image_name" -v NEW_DATE="$ESCAPED_DATE" '{
-          #gsub(/data-date="[^"]+"/, "data-date=\""NEW_DATE"\"");
-          #print;
-          #}' "$HTML_FILE" > "$HTML_FILE.tmp" && mv "$HTML_FILE.tmp" "$HTML_FILE"
-          #}
-
-          update_version_and_date "jupyter-hub" "4.6.3.0" "October 1, 2020" 
-          
+          update_version_and_date "jupyter-hub" "5.0.1.0" "October 30, 2024" 
+          update_version_and_date "jupyter-datascience-notebook" "0.0.0.0" "October 10, 2024"
 
           echo "Version and date updated successfully."
-
-          #rm "${HTML_FILE}.bak"
 
               #ESCAPED_MANIFEST=$(printf '%s' "$MANIFEST_JUPYTER_HUB" | sed 's/[&/\]/\\&/g')
               #awk -v MANIFEST_JUPYTER_HUB="$ESCAPED_MANIFEST" '{
