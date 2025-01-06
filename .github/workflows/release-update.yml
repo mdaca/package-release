@@ -193,10 +193,10 @@ jobs:
           #result_ohdsi_atlas=$(version_compare "${CURRENT_VERSION_OHDSI_ATLAS[1]}" "$OLD_VERSION_OHDSI_ATLAS")
           #result_ohdsi_achilles=$(version_compare "${CURRENT_VERSION_OHDSI_ACHILLES[1]}" "$OLD_VERSION_OHDSI_ACHILLES") 
 
-          function update_version_and_date {
-          local image_name="$1"
-          local new_version="$2"
-          local new_date="$3"
+          update_version_and_date {
+          image_name="$1"
+          new_version="$2"
+          new_date="$3"
 
           # Use sed to update the version
           sed -i.bak -E "s/(<td class=\"version\" data-name=\"$image_name\" data-version=\")[^\"]+(\".*>$image_name<\/td>)/\1$new_version\2/" "$HTML_FILE"
@@ -206,17 +206,18 @@ jobs:
           }
 
           update_version_and_date "jupyter-hub" "4.6.3.0" "October 1, 2024" 
-          rm "${HTML_FILE}.bak"
+          
 
           echo "Version and date updated successfully."
 
+          rm "${HTML_FILE}.bak"
 
 
           # Commit and push changes
           git config --local user.name "${{ github.actor }}"
           git config --local user.email "developer@mdaca.io"
           git status
-          git add $HTML_FILE
+          git add "${HTML_FILE}"
           git commit -m "Update HTML file with new ECR manifests [skip ci]" || echo "No changes to commit"
           git push origin iryna_test
           
