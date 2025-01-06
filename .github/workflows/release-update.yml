@@ -181,146 +181,42 @@ jobs:
           OLD_VERSION_OHDSI_ACHILLES=$(grep -oP 'data-name="ohdsi-achilles" data-version="\K[^"]+' "$HTML_FILE")
 
           # Compare versions for each image
-          result_jupyter_hub=$(version_compare "${CURRENT_VERSION_JUPYTER_HUB[1]}" "$OLD_VERSION_JUPYTER_HUB")
-          result_jupyter_http_proxy=$(version_compare "${CURRENT_VERSION_JUPYTER_HTTP_PROXY[1]}" "$OLD_VERSION_JUPYTER_HTTP_PROXY")
-          result_jupyter_datascience_notebook=$(version_compare "${CURRENT_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK[1]}" "$OLD_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK")
-          result_jupyter_pause=$(version_compare "${CURRENT_VERSION_JUPYTER_PAUSE[1]}" "$OLD_VERSION_JUPYTER_PAUSE")
-          result_jupyter_kube_scheduler=$(version_compare "${CURRENT_VERSION_JUPYTER_KUBE_SCHEDULER[1]}" "$OLD_VERSION_JUPYTER_KUBE_SCHEDULER")
-          result_jupyter_image_awaiter=$(version_compare "${CURRENT_VERSION_JUPYTER_IMAGE_AWAITER[1]}" "$OLD_VERSION_JUPYTER_IMAGE_AWAITER")
-          result_jupyter_network_tools=$(version_compare "${CURRENT_VERSION_JUPYTER_NETWORK_TOOLS[1]}" "$OLD_VERSION_JUPYTER_NETWORK_TOOLS")
-          result_jupyter_secrets_sync=$(version_compare "${CURRENT_VERSION_JUPYTER_SECRETS_SYNC[1]}" "$OLD_VERSION_JUPYTER_SECRETS_SYNC")
-          result_ohdsi_webapi=$(version_compare "${CURRENT_VERSION_OHDSI_WEBAPI[1]}" "$OLD_VERSION_OHDSI_WEBAPI")
-          result_ohdsi_atlas=$(version_compare "${CURRENT_VERSION_OHDSI_ATLAS[1]}" "$OLD_VERSION_OHDSI_ATLAS")
-          result_ohdsi_achilles=$(version_compare "${CURRENT_VERSION_OHDSI_ACHILLES[1]}" "$OLD_VERSION_OHDSI_ACHILLES")     
+          #result_jupyter_hub=$(version_compare "${CURRENT_VERSION_JUPYTER_HUB[1]}" "$OLD_VERSION_JUPYTER_HUB")
+          #result_jupyter_http_proxy=$(version_compare "${CURRENT_VERSION_JUPYTER_HTTP_PROXY[1]}" "$OLD_VERSION_JUPYTER_HTTP_PROXY")
+          #result_jupyter_datascience_notebook=$(version_compare "${CURRENT_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK[1]}" "$OLD_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK")
+          #result_jupyter_pause=$(version_compare "${CURRENT_VERSION_JUPYTER_PAUSE[1]}" "$OLD_VERSION_JUPYTER_PAUSE")
+          #result_jupyter_kube_scheduler=$(version_compare "${CURRENT_VERSION_JUPYTER_KUBE_SCHEDULER[1]}" "$OLD_VERSION_JUPYTER_KUBE_SCHEDULER")
+          #result_jupyter_image_awaiter=$(version_compare "${CURRENT_VERSION_JUPYTER_IMAGE_AWAITER[1]}" "$OLD_VERSION_JUPYTER_IMAGE_AWAITER")
+          #result_jupyter_network_tools=$(version_compare "${CURRENT_VERSION_JUPYTER_NETWORK_TOOLS[1]}" "$OLD_VERSION_JUPYTER_NETWORK_TOOLS")
+          #result_jupyter_secrets_sync=$(version_compare "${CURRENT_VERSION_JUPYTER_SECRETS_SYNC[1]}" "$OLD_VERSION_JUPYTER_SECRETS_SYNC")
+          #result_ohdsi_webapi=$(version_compare "${CURRENT_VERSION_OHDSI_WEBAPI[1]}" "$OLD_VERSION_OHDSI_WEBAPI")
+          #result_ohdsi_atlas=$(version_compare "${CURRENT_VERSION_OHDSI_ATLAS[1]}" "$OLD_VERSION_OHDSI_ATLAS")
+          #result_ohdsi_achilles=$(version_compare "${CURRENT_VERSION_OHDSI_ACHILLES[1]}" "$OLD_VERSION_OHDSI_ACHILLES") 
 
-                    # Update the HTML file if the new version is greater
-                if [ $result_jupyter_hub -eq 0 ]; then
-              echo "Updating Jupyter Hub manifest in HTML file."
-              ESCAPED_MANIFEST=$(printf '%s' "$MANIFEST_JUPYTER_HUB" | sed 's/[&/\]/\\&/g')
-              awk -v MANIFEST_JUPYTER_HUB="$ESCAPED_MANIFEST" '{
-              gsub(/<MANIFEST_JUPYTER_HUB_PLACEHOLDER>/, MANIFEST_JUPYTER_HUB);
-              print;
-              }' "$HTML_FILE" > "$HTML_FILE.tmp" && mv "$HTML_FILE.tmp" "$HTML_FILE"
-              else
-                echo "No update for Jupyter Hub: new version is not greater than old version."
-              fi
-    
-              if [ $result_jupyter_http_proxy -eq 0 ]; then
-              echo "Updating Jupyter HTTP Proxy manifest in HTML file."
-              ESCAPED_MANIFEST=$(printf '%s' "$MANIFEST_JUPYTER_HTTP_PROXY" | sed 's/[&/\]/\\&/g')
-              awk -v MANIFEST_JUPYTER_HTTP_PROXY="$ESCAPED_MANIFEST" '{
-              gsub(/<MANIFEST_JUPYTER_HTTP_PROXY_PLACEHOLDER>/, MANIFEST_JUPYTER_HTTP_PROXY);
-              print;
-              }' "$HTML_FILE" > "$HTML_FILE.tmp" && mv "$HTML_FILE.tmp" "$HTML_FILE"
-              else
-                echo "No update for Jupyter HTTP Proxy: new version is not greater than old version."
-              fi
-    
-              if [ $result_jupyter_datascience_notebook -eq 0 ]; then
-              echo "Updating Jupyter DataScience Notebook manifest in HTML file."
-              ESCAPED_MANIFEST=$(printf '%s' "$MANIFEST_JUPYTER_DATASCIENCE_NOTEBOOK" | sed 's/[&/\]/\\&/g')
-              awk -v MANIFEST_JUPYTER_DATASCIENCE_NOTEBOOK="$ESCAPED_MANIFEST" '{
-              gsub(/<MANIFEST_JUPYTER_DATASCIENCE_PLACEHOLDER>/, MANIFEST_JUPYTER_DATASCIENCE_NOTEBOOK);
-              print;
-              }' "$HTML_FILE" > "$HTML_FILE.tmp" && mv "$HTML_FILE.tmp" "$HTML_FILE"  
-              else
-              echo "No update for Jupyter DataScience Notebook: new version is not greater than old version."
-              fi
-    
-              if [ $result_jupyter_pause -eq 0 ]; then
-              echo "Updating Jupyter k8s Pause manifest in HTML file."
-                  ESCAPED_MANIFEST=$(printf '%s' "$MANIFEST_JUPYTER_PAUSE" | sed 's/[&/\]/\\&/g')
-                  awk -v MANIFEST_JUPYTER_PAUSE="$ESCAPED_MANIFEST" '{
-                  gsub(/<MANIFEST_JUPYTER_PAUSE_PLACEHOLDER>/, MANIFEST_JUPYTER_PAUSE);
-                  print;
-                  }' "$HTML_FILE" > "$HTML_FILE.tmp" && mv "$HTML_FILE.tmp" "$HTML_FILE"
-              else
-              echo "No update for Jupyter K8s Pause: new version is not greater than old version."
-              fi
+          function update_version_and_date {
+          local image_name="$1"
+          local new_version="$2"
+          local new_date="$3"
 
-            if [ $result_jupyter_kube_scheduler -eq 0 ]; then
-                echo "Updating Jupyter K8s Kube Scheduler manifest in HTML file."
-                ESCAPED_MANIFEST=$(printf '%s' "$MANIFEST_JUPYTER_KUBE_SCHEDULER" | sed 's/[&/\]/\\&/g')
-                awk -v MANIFEST_JUPYTER_KUBE_SCHEDULER="$ESCAPED_MANIFEST" '{
-                gsub(/<MANIFEST_JUPYTER_KUBE_SCHEDULER_PLACEHOLDER>/, MANIFEST_JUPYTER_KUBE_SCHEDULER);
-                print;
-                }' "$HTML_FILE" > "$HTML_FILE.tmp" && mv "$HTML_FILE.tmp" "$HTML_FILE"
-            else
-                echo "No update for Jupyter K8s Kube Scheduler : new version is not greater than old version."
-            fi
-            
-            if [ $result_jupyter_image_awaiter -eq 0 ]; then
-                echo "Updating Jupyter Image Awaiter manifest in HTML file."
-                ESCAPED_MANIFEST=$(printf '%s' "$MANIFEST_JUPYTER_IMAGE_AWAITER" | sed 's/[&/\]/\\&/g')
-                awk -v MANIFEST_JUPYTER_IMAGE_AWAITER="$ESCAPED_MANIFEST" '{
-                gsub(/<MANIFEST_JUPYTER_IMAGE_AWAITER_PLACEHOLDER>/, MANIFEST_JUPYTER_IMAGE_AWAITER);
-                print;
-                }' "$HTML_FILE" > "$HTML_FILE.tmp" && mv "$HTML_FILE.tmp" "$HTML_FILE"   
-            else
-                echo "No update for Jupyter Image Awaiter : new version is not greater than old version."
-            fi
-            
-            if [ $result_jupyter_network_tools -eq 0 ]; then
-                echo "Updating Jupyter Network Tools manifest in HTML file."
-                ESCAPED_MANIFEST=$(printf '%s' "$MANIFEST_JUPYTER_NETWORK_TOOLS" | sed 's/[&/\]/\\&/g')
-                awk -v MANIFEST_JUPYTER_NETWORK_TOOLS="$ESCAPED_MANIFEST" '{
-                gsub(/<MANIFEST_JUPYTER_NETWORK_TOOLS_PLACEHOLDER>/, MANIFEST_JUPYTER_NETWORK_TOOLS);
-                print;
-                }' "$HTML_FILE" > "$HTML_FILE.tmp" && mv "$HTML_FILE.tmp" "$HTML_FILE"
-            else
-                echo "No update for Jupyter Network Tools : new version is not greater than old version."
-            fi
-            
-            if [ $result_jupyter_secrets_sync -eq 0 ]; then
-                echo "Updating Jupyter Secret Sync manifest in HTML file."
-                ESCAPED_MANIFEST=$(printf '%s' "$MANIFEST_JUPYTER_SECRETS_SYNC" | sed 's/[&/\]/\\&/g')
-                awk -v MANIFEST_JUPYTER_SECRETS_SYNC="$ESCAPED_MANIFEST" '{
-                gsub(/<MANIFEST_JUPYTER_SECRETS_SYNC_PLACEHOLDER>/, MANIFEST_JUPYTER_SECRETS_SYNC);
-                print;
-                }' "$HTML_FILE" > "$HTML_FILE.tmp" && mv "$HTML_FILE.tmp" "$HTML_FILE"
-            else
-                echo "No update for Jupyter Secrets Sync : new version is not greater than old version."
-            fi
-            
-            if [ $result_ohdsi_webapi -eq 0 ]; then
-                echo "Updating OHDSI WEBAPI manifest in HTML file."
-                ESCAPED_MANIFEST=$(printf '%s' "$MANIFEST_OHDSI_WEBAPI" | sed 's/[&/\]/\\&/g')
-                awk -v MANIFEST_OHDSI_WEBAPI="$ESCAPED_MANIFEST" '{
-                gsub(/<MANIFEST_OHDSI_WEBAPI_PLACEHOLDER>/, MANIFEST_OHDSI_WEBAPI);
-                print;
-                }' "$HTML_FILE" > "$HTML_FILE.tmp" && mv "$HTML_FILE.tmp" "$HTML_FILE"
-            else
-                echo "No update for OHDSI WEBAPI : new version is not greater than old version."
-            fi
-            
-            if [ $result_ohdsi_achilles -eq 0 ]; then
-                echo "Updating OHDSI Achilles manifest in HTML file."
-                ESCAPED_MANIFEST=$(printf '%s' "$MANIFEST_OHDSI_ACHILLES" | sed 's/[&/\]/\\&/g')
-                awk -v MANIFEST_OHDSI_ACHILLES="$ESCAPED_MANIFEST" '{
-                gsub(/<MANIFEST_OHDSI_ACHILLES_PLACEHOLDER>/, MANIFEST_OHDSI_ACHILLES);
-                print;
-                }' "$HTML_FILE" > "$HTML_FILE.tmp" && mv "$HTML_FILE.tmp" "$HTML_FILE"
-            else
-                echo "No update for OHDSI Achilles : new version is not greater than old version."
-            fi
-            
-            if [ $result_ohdsi_atlas -eq 0 ]; then
-                echo "Updating OHDSI ATLAS manifest in HTML file."
-                ESCAPED_MANIFEST=$(printf '%s' "$MANIFEST_OHDSI_ATLAS" | sed 's/[&/\]/\\&/g')
-                awk -v MANIFEST_OHDSI_ATLAS="$ESCAPED_MANIFEST" '{
-                gsub(/<MANIFEST_OHDSI_ATLAS_PLACEHOLDER>/, MANIFEST_OHDSI_ATLAS);
-                print;
-                }' "$HTML_FILE" > "$HTML_FILE.tmp" && mv "$HTML_FILE.tmp" "$HTML_FILE"
-            else       
-                echo "No update for OHDSI ATLAS : new version is not greater than old version."
-            fi
-          #rm -f "$HTML_FILE.bak"
-    
+          # Use sed to update the version
+          sed -i.bak -E "s/(<td class=\"version\" data-name=\"$image_name\" data-version=\")[^\"]+(\".*>$image_name<\/td>)/\1$new_version\2/" "$HTML_FILE"
+
+          # Use sed to update the date
+          sed -i.bak -E "s/(<td class=\"release-date\" data-name=\"$image_name\" data-date=\")[^\"]+(\".*>$image_name<\/td>)/\1$new_date\2/" "$HTML_FILE"
+          }
+
+          update_version_and_date "jupyter-hub" "4.6.3.0" "October 1, 2024" 
+          rm "${HTML_FILE}.bak"
+
+          echo "Version and date updated successfully."
+
+
+
           # Commit and push changes
           git config --local user.name "${{ github.actor }}"
           git config --local user.email "developer@mdaca.io"
           git status
-          #git add $HTML_FILE
-          #git commit -m "Update HTML file with new ECR manifests [skip ci]" || echo "No changes to commit"
-          #git push origin iryna_test
+          git add $HTML_FILE
+          git commit -m "Update HTML file with new ECR manifests [skip ci]" || echo "No changes to commit"
+          git push origin iryna_test
           
