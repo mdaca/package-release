@@ -97,7 +97,7 @@ jobs:
           #echo "$formatted_date"
           echo $rep_name
           echo $version
-          echo "$formatted_date"
+          echo $formatted_date
           }
           echo "the versions start"   
           
@@ -112,7 +112,10 @@ jobs:
           CURRENT_VERSION_JUPYTER_HUB=$version
           
           CURRENT_VERSION_JUPYTER_HTTP_PROXY=($(filter_version $JUPYTER_HTTP_PROXY_REPOSITORY_NAME))
+          echo ${CURRENT_VERSION_JUPYTER_HTTP_PROXY[0]}
           echo ${CURRENT_VERSION_JUPYTER_HTTP_PROXY[1]}
+          echo ${CURRENT_VERSION_JUPYTER_HTTP_PROXY[2]}
+          
           CURRENT_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK=($(filter_version $JUPYTER_DATASCIENCE_NOTEBOOK_REPOSITORY_NAME))
           echo ${CURRENT_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK[1]}
           CURRENT_VERSION_JUPYTER_PAUSE=($(filter_version $JUPYTER_PAUSE_REPOSITORY_NAME))
