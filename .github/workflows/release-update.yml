@@ -93,18 +93,24 @@ jobs:
           version=$(echo $describe_image | jq -r '.imageTags[] | select(. != "latest")')
           date=$(echo "$describe_image" | jq -r '.imagePushedAt')
           formatted_date=$(date -d "$date" +"%B %d, %Y")
-          result=("$rep_name" "$version" "$formatted_date")
+          #result=("$rep_name" "$version" "$formatted_date")
           #echo "$formatted_date"
-          #echo $version 
-          echo ${results[0]}
-          echo ${results[1]}
-          echo ${results[2]}
+          echo $rep_name
+          echo $version
+          echo "$formatted_date"
           }
           echo "the versions start"   
-          CURRENT_VERSION_JUPYTER_HUB=($(filter_version $JUPYTER_HUB_REPOSITORY_NAME))
-          echo "repo : ${CURRENT_VERSION_JUPYTER_HUB[0]}"
-          echo "version : ${CURRENT_VERSION_JUPYTER_HUB[1]}"
-          echo "date: ${CURRENT_VERSION_JUPYTER_HUB[2]}"
+          
+          output=($(filter_version $JUPYTER_HUB_REPOSITORY_NAME))
+          rep_name="${output[0]}"
+          version="${output[1]}"
+          fdate="${output[2]}"
+          
+          echo "repo : $rep_name"
+          echo "version : $version"
+          echo "date: $fdate"
+          CURRENT_VERSION_JUPYTER_HUB=$version
+          
           CURRENT_VERSION_JUPYTER_HTTP_PROXY=($(filter_version $JUPYTER_HTTP_PROXY_REPOSITORY_NAME))
           echo ${CURRENT_VERSION_JUPYTER_HTTP_PROXY[1]}
           CURRENT_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK=($(filter_version $JUPYTER_DATASCIENCE_NOTEBOOK_REPOSITORY_NAME))
