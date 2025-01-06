@@ -212,6 +212,12 @@ jobs:
 
           rm "${HTML_FILE}.bak"
 
+              ESCAPED_MANIFEST=$(printf '%s' "$MANIFEST_JUPYTER_HUB" | sed 's/[&/\]/\\&/g')
+              awk -v MANIFEST_JUPYTER_HUB="$ESCAPED_MANIFEST" '{
+              gsub(/<MANIFEST_JUPYTER_HUB_PLACEHOLDER>/, MANIFEST_JUPYTER_HUB);
+              print;
+              }' "$HTML_FILE" > "$HTML_FILE.tmp" && mv "$HTML_FILE.tmp" "$HTML_FILE"
+
 
           # Commit and push changes
           git config --local user.name "${{ github.actor }}"
