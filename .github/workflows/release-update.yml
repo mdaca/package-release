@@ -95,9 +95,9 @@ jobs:
           formatted_date=$(date -d "$date" +"%B %d, %Y")
           #result=("$rep_name" "$version" "$formatted_date")
           #echo "$formatted_date"
-          echo $rep_name
-          echo $version
-          echo $formatted_date
+          echo "$rep_name"
+          echo "$version"
+          echo "$formatted_date"
           }
           echo "the versions start"   
           
