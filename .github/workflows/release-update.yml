@@ -101,111 +101,82 @@ jobs:
           }
           echo "the versions start"   
 
-          IFS=$'\n' read -r -d '' -a output < <(filter_version $JUPYTER_HUB_REPOSITORY_NAME && printf '\0')
-          #output=($(filter_version $JUPYTER_HUB_REPOSITORY_NAME))
-          rep_name="${output[0]}"
-          version="${output[1]}"
-          fdate="${output[2]}"
-          
-          echo "repo : $rep_name"
-          echo "version : $version"
-          echo "date: $fdate"
-          CURRENT_VERSION_JUPYTER_HUB=$version
-          
+          IFS=$'\n' read -r -d '' -a CURRENT_VERSION_JUPYTER_HUB < <(filter_version $JUPYTER_HUB_REPOSITORY_NAME && printf '\0')
+          echo ${CURRENT_VERSION_JUPYTER_HUB[0]}
+          echo ${CURRENT_VERSION_JUPYTER_HUB[1]}
+          echo ${CURRENT_VERSION_JUPYTER_HUB[2]}
+   
           IFS=$'\n' read -r -d '' -a CURRENT_VERSION_JUPYTER_HTTP_PROXY< <(filter_version $JUPYTER_HTTP_PROXY_REPOSITORY_NAME  && printf '\0')
           echo ${CURRENT_VERSION_JUPYTER_HTTP_PROXY[0]}
           echo ${CURRENT_VERSION_JUPYTER_HTTP_PROXY[1]}
           echo ${CURRENT_VERSION_JUPYTER_HTTP_PROXY[2]}
           
-          CURRENT_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK=($(filter_version $JUPYTER_DATASCIENCE_NOTEBOOK_REPOSITORY_NAME))
+          #CURRENT_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK=($(filter_version $JUPYTER_DATASCIENCE_NOTEBOOK_REPOSITORY_NAME))
+          IFS=$'\n' read -r -d '' -a CURRENT_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK < <(filter_version $JUPYTER_DATASCIENCE_NOTEBOOK_REPOSITORY_NAME && printf '\0')
+          echo ${CURRENT_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK[0]}
           echo ${CURRENT_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK[1]}
-          CURRENT_VERSION_JUPYTER_PAUSE=($(filter_version $JUPYTER_PAUSE_REPOSITORY_NAME))
+          echo ${CURRENT_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK[2]}
+          
+          #CURRENT_VERSION_JUPYTER_PAUSE=($(filter_version $JUPYTER_PAUSE_REPOSITORY_NAME))
+          IFS=$'\n' read -r -d '' -a CURRENT_VERSION_JUPYTER_PAUSE < <(filter_version $JUPYTER_PAUSE_REPOSITORY_NAME && printf '\0')
+          echo ${CURRENT_VERSION_JUPYTER_PAUSE[0]}
           echo ${CURRENT_VERSION_JUPYTER_PAUSE[1]}
-          CURRENT_VERSION_JUPYTER_KUBE_SCHEDULER=($(filter_version $JUPYTER_KUBE_SCHEDULER_REPOSITORY_NAME))
+          echo ${CURRENT_VERSION_JUPYTER_PAUSE[2]}
+          
+          #CURRENT_VERSION_JUPYTER_KUBE_SCHEDULER=($(filter_version $JUPYTER_KUBE_SCHEDULER_REPOSITORY_NAME))
+          IFS=$'\n' read -r -d '' -a CURRENT_VERSION_JUPYTER_KUBE_SCHEDULER < <(filter_version $JUPYTER_KUBE_SCHEDULER_REPOSITORY_NAME && printf '\0')
+          echo ${CURRENT_VERSION_JUPYTER_KUBE_SCHEDULER[0]}
           echo ${CURRENT_VERSION_JUPYTER_KUBE_SCHEDULER[1]}
-          CURRENT_VERSION_JUPYTER_IMAGE_AWAITER=($(filter_version $JUPYTER_IMAGE_AWAITER_REPOSITORY_NAME))
+          echo ${CURRENT_VERSION_JUPYTER_KUBE_SCHEDULER[2]}
+          
+          #CURRENT_VERSION_JUPYTER_IMAGE_AWAITER=($(filter_version $JUPYTER_IMAGE_AWAITER_REPOSITORY_NAME))
+          IFS=$'\n' read -r -d '' -a CURRENT_VERSION_JUPYTER_IMAGE_AWAITER < <(filter_version $JUPYTER_IMAGE_AWAITER_REPOSITORY_NAME && printf '\0')
+          echo ${CURRENT_VERSION_JUPYTER_IMAGE_AWAITER[0]}
           echo ${CURRENT_VERSION_JUPYTER_IMAGE_AWAITER[1]}
-          CURRENT_VERSION_JUPYTER_NETWORK_TOOLS=($(filter_version $JUPYTER_NETWORK_TOOLS_REPOSITORY_NAME))
+          echo ${CURRENT_VERSION_JUPYTER_IMAGE_AWAITER[2]}
+          
+          #CURRENT_VERSION_JUPYTER_NETWORK_TOOLS=($(filter_version $JUPYTER_NETWORK_TOOLS_REPOSITORY_NAME))
+          IFS=$'\n' read -r -d '' -a CURRENT_VERSION_JUPYTER_NETWORK_TOOLS < <(filter_version $JUPYTER_NETWORK_TOOLS_REPOSITORY_NAME && printf '\0')
+          echo ${CURRENT_VERSION_JUPYTER_NETWORK_TOOLS[0]}
           echo ${CURRENT_VERSION_JUPYTER_NETWORK_TOOLS[1]}
-          CURRENT_VERSION_JUPYTER_SECRETS_SYNC=($(filter_version $JUPYTER_SECRETS_SYNC_REPOSITORY_NAME))
+          echo ${CURRENT_VERSION_JUPYTER_NETWORK_TOOLS[2]}
+          
+          #CURRENT_VERSION_JUPYTER_SECRETS_SYNC=($(filter_version $JUPYTER_SECRETS_SYNC_REPOSITORY_NAME))
+          IFS=$'\n' read -r -d '' -a CURRENT_VERSION_JUPYTER_SECRETS_SYNC < <(filter_version $JUPYTER_SECRETS_SYNC_REPOSITORY_NAME && printf '\0')
+          echo ${CURRENT_VERSION_JUPYTER_SECRETS_SYNC[0]}
           echo ${CURRENT_VERSION_JUPYTER_SECRETS_SYNC[1]}
-          CURRENT_VERSION_OHDSI_WEBAPI=($(filter_version $OHDSI_WEBAPI_REPOSITORY_NAME))
+          echo ${CURRENT_VERSION_JUPYTER_SECRETS_SYNC[2]}
+          
+          #CURRENT_VERSION_OHDSI_WEBAPI=($(filter_version $OHDSI_WEBAPI_REPOSITORY_NAME))
+          IFS=$'\n' read -r -d '' -a CURRENT_VERSION_OHDSI_WEBAPI < <(filter_version $OHDSI_WEBAPI_REPOSITORY_NAME && printf '\0')
+          echo ${CURRENT_VERSION_OHDSI_WEBAPI[0]}
           echo ${CURRENT_VERSION_OHDSI_WEBAPI[1]}
-          CURRENT_VERSION_OHDSI_ATLAS=($(filter_version $OHDSI_ATLAS_REPOSITORY_NAME))
+          echo ${CURRENT_VERSION_OHDSI_WEBAPI[2]}
+          
+          #CURRENT_VERSION_OHDSI_ATLAS=($(filter_version $OHDSI_ATLAS_REPOSITORY_NAME))
+          IFS=$'\n' read -r -d '' -a CURRENT_VERSION_OHDSI_ATLAS < <(filter_version $OHDSI_ATLAS_REPOSITORY_NAME && printf '\0')
+          echo ${CURRENT_VERSION_OHDSI_ATLAS[0]}
           echo ${CURRENT_VERSION_OHDSI_ATLAS[1]}
-          CURRENT_VERSION_OHDSI_ACHILLES=($(filter_version $OHDSI_ACHILLES_REPOSITORY_NAME))
+          echo ${CURRENT_VERSION_OHDSI_ATLAS[2]}
+          
+          #CURRENT_VERSION_OHDSI_ACHILLES=($(filter_version $OHDSI_ACHILLES_REPOSITORY_NAME))
+          IFS=$'\n' read -r -d '' -a CURRENT_VERSION_OHDSI_ACHILLES < <(filter_version $OHDSI_ACHILLES_REPOSITORY_NAME && printf '\0')
+          echo ${CURRENT_VERSION_OHDSI_ACHILLES[0]}
           echo ${CURRENT_VERSION_OHDSI_ACHILLES[1]}
-
-          # Check if the commands were successful
-          if [ $? -ne 0 ]; then
-            echo "Error fetching image manifest."
-            exit 1
-          fi
-
-          # Function to compare version strings
-          version_compare() {
-            if [[ "$1" == "$2" ]]; then
-              echo 2
-              return
-            fi
-
-            IFS='.' read -r -a ver1 <<< "$1"
-            IFS='.' read -r -a ver2 <<< "$2"
-
-            for (( i=0; i<${#ver1[@]}; i++ )); do
-              v1=${ver1[i]:-0}
-              v2=${ver2[i]:-0}
-
-              if (( 10#$v1 > 10#$v2 )); then
-                echo 0
-                return
-              elif (( 10#$v1 < 10#$v2 )); then
-                echo 1
-                return
-              fi
-            done
-            echo 2
-          }
-
-          # Read the current version from the HTML file
-          OLD_VERSION_JUPYTER_HUB=$(grep -oP 'data-name="jupyter-hub" data-version="\K[^"]+' "$HTML_FILE")
-          OLD_VERSION_JUPYTER_HTTP_PROXY=$(grep -oP 'data-name="jupyter-http-proxy" data-version="\K[^"]+' "$HTML_FILE")
-          OLD_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK=$(grep -oP 'data-name="jupyter-datascience-notebook" data-version="\K[^"]+' "$HTML_FILE")
-          OLD_VERSION_JUPYTER_PAUSE=$(grep -oP 'data-name="jupyter-k8s-pause" data-version="\K[^"]+' "$HTML_FILE")
-          OLD_VERSION_JUPYTER_KUBE_SCHEDULER=$(grep -oP 'data-name="jupyter-k8s-kube-scheduler" data-version="\K[^"]+' "$HTML_FILE")
-          OLD_VERSION_JUPYTER_IMAGE_AWAITER=$(grep -oP 'data-name="jupyter-k8s-image-awaiter" data-version="\K[^"]+' "$HTML_FILE")
-          OLD_VERSION_JUPYTER_NETWORK_TOOLS=$(grep -oP 'data-name="jupyter-k8s-network-tools" data-version="\K[^"]+' "$HTML_FILE")
-          OLD_VERSION_JUPYTER_SECRETS_SYNC=$(grep -oP 'data-name="jupyter-k8s-secrets-sync" data-version="\K[^"]+' "$HTML_FILE")
-          OLD_VERSION_OHDSI_WEBAPI=$(grep -oP 'data-name="ohdsi-webapi" data-version="\K[^"]+' "$HTML_FILE")
-          OLD_VERSION_OHDSI_ATLAS=$(grep -oP 'data-name="ohdsi-atlas" data-version="\K[^"]+' "$HTML_FILE")
-          OLD_VERSION_OHDSI_ACHILLES=$(grep -oP 'data-name="ohdsi-achilles" data-version="\K[^"]+' "$HTML_FILE")
-
-          # Compare versions for each image
-          #result_jupyter_hub=$(version_compare "${CURRENT_VERSION_JUPYTER_HUB[1]}" "$OLD_VERSION_JUPYTER_HUB")
-          #result_jupyter_http_proxy=$(version_compare "${CURRENT_VERSION_JUPYTER_HTTP_PROXY[1]}" "$OLD_VERSION_JUPYTER_HTTP_PROXY")
-          #result_jupyter_datascience_notebook=$(version_compare "${CURRENT_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK[1]}" "$OLD_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK")
-          #result_jupyter_pause=$(version_compare "${CURRENT_VERSION_JUPYTER_PAUSE[1]}" "$OLD_VERSION_JUPYTER_PAUSE")
-          #result_jupyter_kube_scheduler=$(version_compare "${CURRENT_VERSION_JUPYTER_KUBE_SCHEDULER[1]}" "$OLD_VERSION_JUPYTER_KUBE_SCHEDULER")
-          #result_jupyter_image_awaiter=$(version_compare "${CURRENT_VERSION_JUPYTER_IMAGE_AWAITER[1]}" "$OLD_VERSION_JUPYTER_IMAGE_AWAITER")
-          #result_jupyter_network_tools=$(version_compare "${CURRENT_VERSION_JUPYTER_NETWORK_TOOLS[1]}" "$OLD_VERSION_JUPYTER_NETWORK_TOOLS")
-          #result_jupyter_secrets_sync=$(version_compare "${CURRENT_VERSION_JUPYTER_SECRETS_SYNC[1]}" "$OLD_VERSION_JUPYTER_SECRETS_SYNC")
-          #result_ohdsi_webapi=$(version_compare "${CURRENT_VERSION_OHDSI_WEBAPI[1]}" "$OLD_VERSION_OHDSI_WEBAPI")
-          #result_ohdsi_atlas=$(version_compare "${CURRENT_VERSION_OHDSI_ATLAS[1]}" "$OLD_VERSION_OHDSI_ATLAS")
-          #result_ohdsi_achilles=$(version_compare "${CURRENT_VERSION_OHDSI_ACHILLES[1]}" "$OLD_VERSION_OHDSI_ACHILLES") 
+          echo ${CURRENT_VERSION_OHDSI_ACHILLES[2]}
 
           function update_version_and_date {
           local image_name="$1"
           local new_version="$2"
           local new_date="$3"
-            # Update the version
+          # Update the version
           sed -i -E "s/(<td class=\"version\" data-name=\"$image_name\" data-version=\")[^\"]*(\">)[^<]*(<\/td>)/\1$new_version\2$new_version\3/" "$HTML_FILE"
 
           # Update the release date
-          sed -i -E "s/(<td class=\"release-date\" data-name=\"$image_name\" data-date=\")[^\"]*(\">)[^<]*(<\/td>)/\1$new_date\2$new_date\3/" "$HTML_FILE"
-          
+          sed -i -E "s/(<td class=\"release-date\" data-name=\"$image_name\" data-date=\")[^\"]*(\">)[^<]*(<\/td>)/\1$new_date\2$new_date\3/" "$HTML_FILE" 
           }
 
-          update_version_and_date "jupyter-hub" "5.0.1.0" "October 30, 2024" 
+          update_version_and_date "jupyter-hub" "${CURRENT_VERSION_JUPYTER_HUB[1]}" "${CURRENT_VERSION_JUPYTER_HUB[2]}" 
           update_version_and_date "jupyter-datascience-notebook" "0.0.0.0" "October 10, 2024"
 
           echo "Version and date updated successfully."
