@@ -93,32 +93,36 @@ jobs:
           version=$(echo $describe_image | jq -r '.imageTags[] | select(. != "latest")')
           date=$(echo "$describe_image" | jq -r '.imagePushedAt')
           formatted_date=$(date -d "$date" +"%B %d, %Y")
+          result=("$rep_name" "$version" "$formatted_date")
           #echo "$formatted_date"
-          echo $version 
+          #echo $version 
+          echo $result
           }
           echo "the versions start"   
           CURRENT_VERSION_JUPYTER_HUB=$(filter_version $JUPYTER_HUB_REPOSITORY_NAME)
-          echo $CURRENT_VERSION_JUPYTER_HUB    
+          echo $CURRENT_VERSION_JUPYTER_HUB[0]
+          echo $CURRENT_VERSION_JUPYTER_HUB[1]
+          echo $CURRENT_VERSION_JUPYTER_HUB[2]
           CURRENT_VERSION_JUPYTER_HTTP_PROXY=$(filter_version $JUPYTER_HTTP_PROXY_REPOSITORY_NAME)
-          echo $CURRENT_VERSION_JUPYTER_HTTP_PROXY
+          echo $CURRENT_VERSION_JUPYTER_HTTP_PROXY[1]
           CURRENT_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK=$(filter_version $JUPYTER_DATASCIENCE_NOTEBOOK_REPOSITORY_NAME)
-          echo $CURRENT_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK
+          echo $CURRENT_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK[1]
           CURRENT_VERSION_JUPYTER_PAUSE=$(filter_version $JUPYTER_PAUSE_REPOSITORY_NAME)
-          echo $CURRENT_VERSION_JUPYTER_PAUSE
+          echo $CURRENT_VERSION_JUPYTER_PAUSE[1]
           CURRENT_VERSION_JUPYTER_KUBE_SCHEDULER=$(filter_version $JUPYTER_KUBE_SCHEDULER_REPOSITORY_NAME)
-          echo $CURRENT_VERSION_JUPYTER_KUBE_SCHEDULER
+          echo $CURRENT_VERSION_JUPYTER_KUBE_SCHEDULER[1]
           CURRENT_VERSION_JUPYTER_IMAGE_AWAITER=$(filter_version $JUPYTER_IMAGE_AWAITER_REPOSITORY_NAME)
-          echo $CURRENT_VERSION_JUPYTER_IMAGE_AWAITER
+          echo $CURRENT_VERSION_JUPYTER_IMAGE_AWAITER[1]
           CURRENT_VERSION_JUPYTER_NETWORK_TOOLS=$(filter_version $JUPYTER_NETWORK_TOOLS_REPOSITORY_NAME)
-          echo $CURRENT_VERSION_JUPYTER_NETWORK_TOOLS
+          echo $CURRENT_VERSION_JUPYTER_NETWORK_TOOLS[1]
           CURRENT_VERSION_JUPYTER_SECRETS_SYNC=$(filter_version $JUPYTER_SECRETS_SYNC_REPOSITORY_NAME)
-          echo $CURRENT_VERSION_JUPYTER_SECRETS_SYNC
+          echo $CURRENT_VERSION_JUPYTER_SECRETS_SYNC[1]
           CURRENT_VERSION_OHDSI_WEBAPI=$(filter_version $OHDSI_WEBAPI_REPOSITORY_NAME)
-          echo $CURRENT_VERSION_OHDSI_WEBAPI
+          echo $CURRENT_VERSION_OHDSI_WEBAPI[1]
           CURRENT_VERSION_OHDSI_ATLAS=$(filter_version $OHDSI_ATLAS_REPOSITORY_NAME)
-          echo $CURRENT_VERSION_OHDSI_ATLAS
+          echo $CURRENT_VERSION_OHDSI_ATLAS[1]
           CURRENT_VERSION_OHDSI_ACHILLES=$(filter_version $OHDSI_ACHILLES_REPOSITORY_NAME)
-          echo $CURRENT_VERSION_OHDSI_ACHILLES
+          echo $CURRENT_VERSION_OHDSI_ACHILLES[1]
 
           # Check if the commands were successful
           if [ $? -ne 0 ]; then
@@ -165,17 +169,17 @@ jobs:
           OLD_VERSION_OHDSI_ACHILLES=$(grep -oP 'data-name="ohdsi-achilles" data-version="\K[^"]+' "$HTML_FILE")
 
           # Compare versions for each image
-          result_jupyter_hub=$(version_compare "$CURRENT_VERSION_JUPYTER_HUB" "$OLD_VERSION_JUPYTER_HUB")
-          result_jupyter_http_proxy=$(version_compare "$CURRENT_VERSION_JUPYTER_HTTP_PROXY" "$OLD_VERSION_JUPYTER_HTTP_PROXY")
-          result_jupyter_datascience_notebook=$(version_compare "$CURRENT_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK" "$OLD_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK")
-          result_jupyter_pause=$(version_compare "$CURRENT_VERSION_JUPYTER_PAUSE" "$OLD_VERSION_JUPYTER_PAUSE")
-          result_jupyter_kube_scheduler=$(version_compare "$CURRENT_VERSION_JUPYTER_KUBE_SCHEDULER" "$OLD_VERSION_JUPYTER_KUBE_SCHEDULER")
-          result_jupyter_image_awaiter=$(version_compare "$CURRENT_VERSION_JUPYTER_IMAGE_AWAITER" "$OLD_VERSION_JUPYTER_IMAGE_AWAITER")
-          result_jupyter_network_tools=$(version_compare "$CURRENT_VERSION_JUPYTER_NETWORK_TOOLS" "$OLD_VERSION_JUPYTER_NETWORK_TOOLS")
-          result_jupyter_secrets_sync=$(version_compare "$CURRENT_VERSION_JUPYTER_SECRETS_SYNC" "$OLD_VERSION_JUPYTER_SECRETS_SYNC")
-          result_ohdsi_webapi=$(version_compare "$CURRENT_VERSION_OHDSI_WEBAPI" "$OLD_VERSION_OHDSI_WEBAPI")
-          result_ohdsi_atlas=$(version_compare "$CURRENT_VERSION_OHDSI_ATLAS" "$OLD_VERSION_OHDSI_ATLAS")
-          result_ohdsi_achilles=$(version_compare "$CURRENT_VERSION_OHDSI_ACHILLES" "$OLD_VERSION_OHDSI_ACHILLES")     
+          result_jupyter_hub=$(version_compare "$CURRENT_VERSION_JUPYTER_HUB[1]" "$OLD_VERSION_JUPYTER_HUB")
+          result_jupyter_http_proxy=$(version_compare "$CURRENT_VERSION_JUPYTER_HTTP_PROXY[1]" "$OLD_VERSION_JUPYTER_HTTP_PROXY")
+          result_jupyter_datascience_notebook=$(version_compare "$CURRENT_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK[1]" "$OLD_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK")
+          result_jupyter_pause=$(version_compare "$CURRENT_VERSION_JUPYTER_PAUSE[1]" "$OLD_VERSION_JUPYTER_PAUSE")
+          result_jupyter_kube_scheduler=$(version_compare "$CURRENT_VERSION_JUPYTER_KUBE_SCHEDULER[1]" "$OLD_VERSION_JUPYTER_KUBE_SCHEDULER")
+          result_jupyter_image_awaiter=$(version_compare "$CURRENT_VERSION_JUPYTER_IMAGE_AWAITER[1]" "$OLD_VERSION_JUPYTER_IMAGE_AWAITER")
+          result_jupyter_network_tools=$(version_compare "$CURRENT_VERSION_JUPYTER_NETWORK_TOOLS[1]" "$OLD_VERSION_JUPYTER_NETWORK_TOOLS")
+          result_jupyter_secrets_sync=$(version_compare "$CURRENT_VERSION_JUPYTER_SECRETS_SYNC[1]" "$OLD_VERSION_JUPYTER_SECRETS_SYNC")
+          result_ohdsi_webapi=$(version_compare "$CURRENT_VERSION_OHDSI_WEBAPI[1]" "$OLD_VERSION_OHDSI_WEBAPI")
+          result_ohdsi_atlas=$(version_compare "$CURRENT_VERSION_OHDSI_ATLAS[1]" "$OLD_VERSION_OHDSI_ATLAS")
+          result_ohdsi_achilles=$(version_compare "$CURRENT_VERSION_OHDSI_ACHILLES[1]" "$OLD_VERSION_OHDSI_ACHILLES")     
 
                     # Update the HTML file if the new version is greater
                 if [ $result_jupyter_hub -eq 0 ]; then
