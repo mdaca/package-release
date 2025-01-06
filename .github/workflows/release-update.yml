@@ -187,11 +187,14 @@ jobs:
           update_version_and_date "ohdsi-webapi" "${CURRENT_VERSION_OHDSI_WEBAPI[1]}" "${CURRENT_VERSION_OHDSI_WEBAPI[2]}"
           update_version_and_date "ohdsi-atlas" "${CURRENT_VERSION_OHDSI_ATLAS[1]}" "${CURRENT_VERSION_OHDSI_ATLAS[2]}"
           update_version_and_date "ohdsi-achilles" "${CURRENT_VERSION_OHDSI_ACHILLES[1]}" "${CURRENT_VERSION_OHDSI_ACHILLES[2]}"
-
+         
+          echo "Version and date updated successfully."
+         
           function update_manifest {
           local image_name="$1"
           local new_manifest="$2" 
-          echo "hello world"
+          echo $image_name
+          echo $new_manifest
           }
 
           update_manifest "jupyter-hub" $MANIFEST_JUPYTER_HUB
@@ -206,7 +209,7 @@ jobs:
           update_manifest "ohdsi-atlas" $MANIFEST_OHDSI_ATLAS
           update_manifest "ohdsi-achilles" $MANIFEST_OHDSI_ACHILLES
 
-          echo "Version and date updated successfully."
+          echo "Manifests updated successfully."
 
               #ESCAPED_MANIFEST=$(printf '%s' "$MANIFEST_JUPYTER_HUB" | sed 's/[&/\]/\\&/g')
               #awk -v MANIFEST_JUPYTER_HUB="$ESCAPED_MANIFEST" '{
