@@ -112,7 +112,7 @@ jobs:
           echo "date: $fdate"
           CURRENT_VERSION_JUPYTER_HUB=$version
           
-          CURRENT_VERSION_JUPYTER_HTTP_PROXY=($(filter_version $JUPYTER_HTTP_PROXY_REPOSITORY_NAME))
+          IFS=$'\n' read -r -d '' -a CURRENT_VERSION_JUPYTER_HTTP_PROXY< <(filter_version $JUPYTER_HTTP_PROXY_REPOSITORY_NAME  && printf '\0')
           echo ${CURRENT_VERSION_JUPYTER_HTTP_PROXY[0]}
           echo ${CURRENT_VERSION_JUPYTER_HTTP_PROXY[1]}
           echo ${CURRENT_VERSION_JUPYTER_HTTP_PROXY[2]}
