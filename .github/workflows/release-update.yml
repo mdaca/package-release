@@ -100,8 +100,9 @@ jobs:
           echo "$formatted_date"
           }
           echo "the versions start"   
-          
-          output=($(filter_version $JUPYTER_HUB_REPOSITORY_NAME))
+
+          IFS=$'\n' read -r -d '' -a output < <(filter_version $JUPYTER_HUB_REPOSITORY_NAME && printf '\0')
+          #output=($(filter_version $JUPYTER_HUB_REPOSITORY_NAME))
           rep_name="${output[0]}"
           version="${output[1]}"
           fdate="${output[2]}"
