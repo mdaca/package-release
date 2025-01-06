@@ -193,7 +193,7 @@ jobs:
           #result_ohdsi_atlas=$(version_compare "${CURRENT_VERSION_OHDSI_ATLAS[1]}" "$OLD_VERSION_OHDSI_ATLAS")
           #result_ohdsi_achilles=$(version_compare "${CURRENT_VERSION_OHDSI_ACHILLES[1]}" "$OLD_VERSION_OHDSI_ACHILLES") 
 
-          update_version_and_date {
+          update_version_and_date() {
           image_name="$1"
           new_version="$2"
           new_date="$3"
