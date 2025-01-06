@@ -193,8 +193,14 @@ jobs:
           function update_manifest {
           local image_name="$1"
           local new_manifest="$2" 
-          echo "$image_name"
-          echo "$new_manifest"
+
+          local escaped_manifest=$(echo "$new_manifest" | sed 's/[\/&]/\\&/g' | sed 's/"/\\"/g')
+          
+           # Use sed to replace the manifest value for the specific image_name
+          sed -i "/'$image_name': {/!b;n;c    '$image_name': '$escaped_manifest'," "$HTML_FILE"
+
+          #echo "$image_name"
+          #echo "$new_manifest"
           }
 
           update_manifest "jupyter-hub" "$MANIFEST_JUPYTER_HUB"
