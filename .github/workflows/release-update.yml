@@ -200,10 +200,10 @@ jobs:
           # Find the start line number of the manifest for the given image_name
           local start_line=$(grep -n "'$image_name': {" "${HTML_FILE}" | cut -d: -f1)
 
-          # If start line is not found, skip the update
+          # If the start line is not found, skip the update
           if [ -z "$start_line" ]; then
-            echo "No manifest section found for $image_name, skipping update."
-            return
+          echo "No manifest section found for $image_name, skipping update."
+          return
           fi
 
           # Find the end line number of the manifest section which ends either at the next image_name or the end of manifest block
@@ -211,19 +211,19 @@ jobs:
           local end_line
 
           if [ -z "$next_section_line" ]; then
-            end_line=$(grep -n '//' "${HTML_FILE}" | cut -d: -f1 | head -n 1)
+          end_line=$(grep -n '//' "${HTML_FILE}" | cut -d: -f1 | head -n 1)
           else
           end_line=$((start_line + next_section_line - 1))
           fi
 
-          # Prepare the replacement content
-          local replacement="'$image_name': \"$escaped_manifest\","
+          # Prepare the replacement content in required format
+          local replacement="$image_name': $escaped_manifest"
 
           # Replace the manifest block for the specific image_name
           if [ ! -z "$end_line" ]; then
-            sed -i "${start_line},${end_line}c\\'${replacement}" "${HTML_FILE}"
+          sed -i "${start_line},${end_line}c\\'${replacement}" "${HTML_FILE}"
           else
-            sed -i "${start_line}c\\'${replacement}" "${HTML_FILE}"
+          sed -i "${start_line}c\\'${replacement}" "${HTML_FILE}"
           fi
           }
          
