@@ -189,20 +189,45 @@ jobs:
           update_version_and_date "ohdsi-achilles" "${CURRENT_VERSION_OHDSI_ACHILLES[1]}" "${CURRENT_VERSION_OHDSI_ACHILLES[2]}"
          
           echo "Version and date updated successfully."
-         
+
           function update_manifest {
           local image_name="$1"
-          local new_manifest="$2" 
+          local new_manifest="$2"
+    
+          # Use printf to escape special characters in the new_manifest for sed
+          local escaped_manifest=$(printf "%s" "$new_manifest" | sed 's/[\/&]/\\&/g' | sed 's/"/\\"/g')
+    
+          # Find the start line number of the manifest for the given image_name
+          local start_line=$(grep -n "'$image_name': {" "$HTML_FILE" | cut -d: -f1)
+    
+          # If start line is not found, skip the update
+          if [ -z "$start_line" ]; then
+            echo "No manifest section found for $image_name, skipping update."
+          return
+          fi
+    
+            # Find the end line number of the manifest section which ends either at the next image_name or the end of manifest block
+          local next_section_line=$(tail -n +"$((start_line + 1))" "$HTML_FILE" | grep -n -m 1 "^'.*': {" | cut -d: -f1)
+          local end_line
+    
+            if [ -z "$next_section_line" ]; then
+            end_line=$(grep -n '//' "$HTML_FILE" | cut -d: -f1 | head -n 1)
+            else
+            end_line=$((start_line + next_section_line - 1))
+            fi  
+    
+          # Prepare the replacement content
+          local replacement="$image_name': $escaped_manifest,\"
+          $HTML_FILE
 
-          local escaped_manifest=$(echo "$new_manifest" | sed 's/[\/&]/\\&/g' | sed 's/"/\\"/g')
-          
-           # Use sed to replace the manifest value for the specific image_name
-          sed -i "/'$image_name': {/!b;n;c    '$image_name': '$escaped_manifest'," "$HTML_FILE"
-
-          #echo "$image_name"
-          #echo "$new_manifest"
+          # Replace the manifest block for the specific image_name
+          if [ ! -z "$end_line" ]; then
+            sed -i "${start_line},${end_line}c\\'${replacement}" "$HTML_FILE"
+          else
+            sed -i "${start_line}c\\'${replacement}" "$HTML_FILE"
+          fi
           }
-
+         
           update_manifest "jupyter-hub" "$MANIFEST_JUPYTER_HUB"
           update_manifest "jupyter-http-proxy" "$MANIFEST_JUPYTER_HTTP_PROXY"
           update_manifest "jupyter-datascience-notebook" "$MANIFEST_JUPYTER_DATASCIENCE_NOTEBOOK"
@@ -216,13 +241,6 @@ jobs:
           update_manifest "ohdsi-achilles" "$MANIFEST_OHDSI_ACHILLES"
 
           echo "Manifests updated successfully."
-
-              #ESCAPED_MANIFEST=$(printf '%s' "$MANIFEST_JUPYTER_HUB" | sed 's/[&/\]/\\&/g')
-              #awk -v MANIFEST_JUPYTER_HUB="$ESCAPED_MANIFEST" '{
-              #gsub(/<MANIFEST_JUPYTER_HUB_PLACEHOLDER>/, MANIFEST_JUPYTER_HUB);
-              #print;
-              #}' "$HTML_FILE" > "$HTML_FILE.tmp" && mv "$HTML_FILE.tmp" "$HTML_FILE"
-
 
           # Commit and push changes
           git config --local user.name "${{ github.actor }}"
