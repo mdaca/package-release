@@ -31,6 +31,7 @@ jobs:
 
           #!/bin/bash
 
+
           # Define variables
           OHDSI_WEBAPI_REPOSITORY_NAME="mdaca/ohdsi/webapi"
           OHDSI_ATLAS_REPOSITORY_NAME="mdaca/ohdsi/atlas"
