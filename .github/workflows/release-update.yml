@@ -191,47 +191,50 @@ jobs:
          
           echo "Version and date updated successfully."
             
-             function update_manifest {
-              local image_name="$1"
-              local new_manifest="$2"
-          
-              # Use printf to escape special characters in the new_manifest for sed
-              local escaped_manifest=$(printf "%s" "$new_manifest" | sed 's/[\/&]/\\&/g' | sed 's/"/\\"/g')
-          
-              # Find the start line number of the manifest for the given image_name
-              local start_line=$(grep -n "'$image_name': {" "$HTML_FILE" | cut -d: -f1)
-          
-              # If the start line is not found, skip the update
-              if [ -z "$start_line" ]; then
-                  echo "No manifest section found for $image_name, skipping update."
-                  return
-              fi
-          
-              # Find the end line number of the manifest section which ends either at the next image_name or the end of manifest block
-              local next_section_line=$(tail -n +"$((start_line + 1))" "$HTML_FILE" | grep -n -m 1 "^'.*': {" | cut -d: -f1)
-              local end_line
-          
-              if [ -z "$next_section_line" ]; then
-                  end_line=$(grep -n '//' "$HTML_FILE" | cut -d: -f1 | head -n 1)
-                  if [ -z "$end_line" ]; then
-                      end_line=$(wc -l < "$HTML_FILE")
-                  fi
-              else
-                  end_line=$((start_line + next_section_line - 2))
-              fi
-          
-              # Check if the current section is the last one in the manifest
-              local is_last_section=$(tail -n +"$((end_line + 1))" "$HTML_FILE" | grep -q "^'.*': {"; echo $?)
-          
-              # Prepare the replacement content in required format
-              local replacement="'${image_name}': ${escaped_manifest}"
-              if [ "$is_last_section" -ne 0 ] && [ "$image_name" != "ohdsi-achilles" ]; then
-                  replacement="${replacement},"
-              fi
-          
-              # Replace the manifest block for the specific image_name
-              sed -i "${start_line},${end_line}c\\${replacement}" "$HTML_FILE"
-          }
+            function update_manifest {
+                local image_name="$1"
+                local new_manifest="$2"
+            
+                # Use printf to escape special characters in the new_manifest for sed
+                local escaped_manifest=$(printf "%s" "$new_manifest" | sed 's/[\/&]/\\&/g' | sed 's/"/\\"/g')
+            
+                # Find the start line number of the manifest for the given image_name
+                local start_line=$(grep -n "'$image_name': {" "$HTML_FILE" | cut -d: -f1)
+            
+                # If the start line is not found, skip the update
+                if [ -z "$start_line" ]; then
+                    echo "No manifest section found for $image_name, skipping update."
+                    return
+                fi
+            
+                # Find the end line number of the manifest section which ends either at the next image_name or the end of manifest block
+                local next_section_line=$(tail -n +"$((start_line + 1))" "$HTML_FILE" | grep -n -m 1 "^'.*': {" | cut -d: -f1)
+                local end_line
+            
+                if [ -z "$next_section_line" ]; then
+                    end_line=$(grep -n '//' "$HTML_FILE" | cut -d: -f1 | head -n 1)
+                    if [ -z "$end_line" ]; then
+                        end_line=$(wc -l < "$HTML_FILE")
+                    fi
+                else
+                    end_line=$((start_line + next_section_line - 2))
+                fi
+            
+                # Check if the current section is the last one in the manifest
+                local is_last_image=true
+                if grep -q "^'.*': {" <(tail -n +$((end_line + 1)) "$HTML_FILE"); then
+                    is_last_image=false
+                fi
+            
+                # Prepare the replacement content in required format
+                local replacement="'${image_name}': ${escaped_manifest}"
+                if ! $is_last_image; then
+                    replacement="${replacement},"
+                fi
+            
+                # Replace the manifest block for the specific image_name
+                sed -i "${start_line},${end_line}c\\${replacement}" "$HTML_FILE"
+            }
          
           update_manifest "jupyter-hub" "$MANIFEST_JUPYTER_HUB"
           update_manifest "jupyter-http-proxy" "$MANIFEST_JUPYTER_HTTP_PROXY"
