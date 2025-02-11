@@ -1,0 +1,260 @@
+name: Update HTML File with ECR Manifests
+
+on:
+  push:
+    branches:
+      - main  # Adjust this if you want to run on a different branch
+  workflow_dispatch:  # Allows manual trigger of the workflow
+
+jobs:
+  update-html:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+        
+      - name: Set up AWS CLI and get ECR Token
+        env:
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-east-2
+        run: |
+          echo "Set AWS credentials and login to ECR"
+          aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+          aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+          aws configure set default.region $AWS_REGION
+          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+          
+          echo "Update HTML File with ECR Manifests"
+
+          #!/bin/bash
+
+
+          # Define variables
+          OHDSI_WEBAPI_REPOSITORY_NAME="mdaca/ohdsi/webapi"
+          OHDSI_ATLAS_REPOSITORY_NAME="mdaca/ohdsi/atlas"
+          OHDSI_ACHILLES_REPOSITORY_NAME="mdaca/ohdsi/achilles"
+          JUPYTER_HUB_REPOSITORY_NAME="mdaca/jupyter/jupyter-hub"
+          JUPYTER_HTTP_PROXY_REPOSITORY_NAME="mdaca/jupyter/jupyter-http-proxy"
+          JUPYTER_DATASCIENCE_NOTEBOOK_REPOSITORY_NAME="mdaca/jupyter/jupyter-datascience-notebook"
+          JUPYTER_IMAGE_AWAITER_REPOSITORY_NAME="mdaca/jupyter/k8s/image-awaiter"
+          JUPYTER_PAUSE_REPOSITORY_NAME="mdaca/jupyter/k8s/pause"
+          JUPYTER_NETWORK_TOOLS_REPOSITORY_NAME="mdaca/jupyter/k8s/network-tools"
+          JUPYTER_SECRETS_SYNC_REPOSITORY_NAME="mdaca/jupyter/k8s/secrets-sync"
+          JUPYTER_KUBE_SCHEDULER_REPOSITORY_NAME="mdaca/jupyter/k8s/kube-scheduler"
+          IMAGE_TAG="latest"
+          HTML_FILE="release.html"  # Update with your HTML file path
+
+          get_manifest(){
+          rep_name=$1
+          manifest_value=$(aws ecr batch-get-image --repository-name "$rep_name" --region us-east-2 --image-ids imageTag="$IMAGE_TAG" --query 'images[].imageManifest' --output text)
+          echo $manifest_value
+          }
+
+          # Fetch the image manifest from ECR for each image
+          echo $JUPYTER_HUB_REPOSITORY_NAME
+          MANIFEST_JUPYTER_HUB=$(get_manifest $JUPYTER_HUB_REPOSITORY_NAME)
+          echo $MANIFEST_JUPYTER_HUB
+          #echo $JUPYTER_HTTP_PROXY_REPOSITORY_NAME
+          MANIFEST_JUPYTER_HTTP_PROXY=$(get_manifest $JUPYTER_HTTP_PROXY_REPOSITORY_NAME)
+          echo $MANIFEST_JUPYTER_HTTP_PROXY
+          echo $JUPYTER_DATASCIENCE_NOTEBOOK_REPOSITORY_NAME
+          MANIFEST_JUPYTER_DATASCIENCE_NOTEBOOK=$(get_manifest $JUPYTER_DATASCIENCE_NOTEBOOK_REPOSITORY_NAME)
+          echo $MANIFEST_JUPYTER_DATASCIENCE_NOTEBOOK
+          echo $JUPYTER_IMAGE_AWAITER_REPOSITORY_NAME
+          MANIFEST_IMAGE_AWAITER=$(get_manifest $JUPYTER_IMAGE_AWAITER_REPOSITORY_NAME)
+          echo $MANIFEST_IMAGE_AWAITER
+          echo $JUPYTER_PAUSE_REPOSITORY_NAME
+          MANIFEST_PAUSE_PROXY=$(get_manifest $JUPYTER_PAUSE_REPOSITORY_NAME)
+          echo $MANIFEST_PAUSE_PROXY
+          echo $JUPYTER_NETWORK_TOOLS_REPOSITORY_NAME
+          MANIFEST_JUPYTER_NETWORK_TOOLS=$(get_manifest $JUPYTER_NETWORK_TOOLS_REPOSITORY_NAME)
+          echo $MANIFEST_JUPYTER_NETWORK_TOOLS
+          echo $JUPYTER_SECRETS_SYNC_REPOSITORY_NAME
+          MANIFEST_SECRETS_SYNC=$(get_manifest $JUPYTER_SECRETS_SYNC_REPOSITORY_NAME)
+          echo $MANIFEST_SECRETS_SYNC
+          echo $JUPYTER_KUBE_SCHEDULER_REPOSITORY_NAME
+          MANIFEST_KUBE_SCHEDULER=$(get_manifest $JUPYTER_KUBE_SCHEDULER_REPOSITORY_NAME)
+          echo $MANIFEST_KUBE_SCHEDULER
+          echo $OHDSI_WEBAPI_REPOSITORY_NAME
+          MANIFEST_OHDSI_WEBAPI=$(get_manifest $OHDSI_WEBAPI_REPOSITORY_NAME)
+          echo $MANIFEST_OHDSI_WEBAPI
+          echo $OHDSI_ATLAS_REPOSITORY_NAME
+          MANIFEST_OHDSI_ATLAS=$(get_manifest $OHDSI_ATLAS_REPOSITORY_NAME)
+          echo $MANIFEST_OHDSI_ATLAS
+          echo $OHDSI_ACHILLES_REPOSITORY_NAME
+          MANIFEST_OHDSI_ACHILLES=$(get_manifest $OHDSI_ACHILLES_REPOSITORY_NAME)
+          echo $MANIFEST_OHDSI_ACHILLES
+
+          filter_version(){
+          rep_name=$1
+          describe_image=$(aws ecr describe-images --output json --repository-name $rep_name --query 'sort_by(imageDetails,& imagePushedAt)[-1]') 
+          version=$(echo $describe_image | jq -r '.imageTags[] | select(. != "latest")')
+          date=$(echo "$describe_image" | jq -r '.imagePushedAt')
+          formatted_date=$(date -d "$date" +"%B %d, %Y")
+          #result=("$rep_name" "$version" "$formatted_date")
+          #echo "$formatted_date"
+          echo "$rep_name"
+          echo "$version"
+          echo "$formatted_date"
+          }
+          echo "the versions start"   
+
+          IFS=$'\n' read -r -d '' -a CURRENT_VERSION_JUPYTER_HUB < <(filter_version $JUPYTER_HUB_REPOSITORY_NAME && printf '\0')
+          echo ${CURRENT_VERSION_JUPYTER_HUB[0]}
+          echo ${CURRENT_VERSION_JUPYTER_HUB[1]}
+          echo ${CURRENT_VERSION_JUPYTER_HUB[2]}
+   
+          IFS=$'\n' read -r -d '' -a CURRENT_VERSION_JUPYTER_HTTP_PROXY< <(filter_version $JUPYTER_HTTP_PROXY_REPOSITORY_NAME  && printf '\0')
+          echo ${CURRENT_VERSION_JUPYTER_HTTP_PROXY[0]}
+          echo ${CURRENT_VERSION_JUPYTER_HTTP_PROXY[1]}
+          echo ${CURRENT_VERSION_JUPYTER_HTTP_PROXY[2]}
+          
+          #CURRENT_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK=($(filter_version $JUPYTER_DATASCIENCE_NOTEBOOK_REPOSITORY_NAME))
+          IFS=$'\n' read -r -d '' -a CURRENT_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK < <(filter_version $JUPYTER_DATASCIENCE_NOTEBOOK_REPOSITORY_NAME && printf '\0')
+          echo ${CURRENT_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK[0]}
+          echo ${CURRENT_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK[1]}
+          echo ${CURRENT_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK[2]}
+          
+          #CURRENT_VERSION_JUPYTER_PAUSE=($(filter_version $JUPYTER_PAUSE_REPOSITORY_NAME))
+          IFS=$'\n' read -r -d '' -a CURRENT_VERSION_JUPYTER_PAUSE < <(filter_version $JUPYTER_PAUSE_REPOSITORY_NAME && printf '\0')
+          echo ${CURRENT_VERSION_JUPYTER_PAUSE[0]}
+          echo ${CURRENT_VERSION_JUPYTER_PAUSE[1]}
+          echo ${CURRENT_VERSION_JUPYTER_PAUSE[2]}
+          
+          #CURRENT_VERSION_JUPYTER_KUBE_SCHEDULER=($(filter_version $JUPYTER_KUBE_SCHEDULER_REPOSITORY_NAME))
+          IFS=$'\n' read -r -d '' -a CURRENT_VERSION_JUPYTER_KUBE_SCHEDULER < <(filter_version $JUPYTER_KUBE_SCHEDULER_REPOSITORY_NAME && printf '\0')
+          echo ${CURRENT_VERSION_JUPYTER_KUBE_SCHEDULER[0]}
+          echo ${CURRENT_VERSION_JUPYTER_KUBE_SCHEDULER[1]}
+          echo ${CURRENT_VERSION_JUPYTER_KUBE_SCHEDULER[2]}
+          
+          #CURRENT_VERSION_JUPYTER_IMAGE_AWAITER=($(filter_version $JUPYTER_IMAGE_AWAITER_REPOSITORY_NAME))
+          IFS=$'\n' read -r -d '' -a CURRENT_VERSION_JUPYTER_IMAGE_AWAITER < <(filter_version $JUPYTER_IMAGE_AWAITER_REPOSITORY_NAME && printf '\0')
+          echo ${CURRENT_VERSION_JUPYTER_IMAGE_AWAITER[0]}
+          echo ${CURRENT_VERSION_JUPYTER_IMAGE_AWAITER[1]}
+          echo ${CURRENT_VERSION_JUPYTER_IMAGE_AWAITER[2]}
+          
+          #CURRENT_VERSION_JUPYTER_NETWORK_TOOLS=($(filter_version $JUPYTER_NETWORK_TOOLS_REPOSITORY_NAME))
+          IFS=$'\n' read -r -d '' -a CURRENT_VERSION_JUPYTER_NETWORK_TOOLS < <(filter_version $JUPYTER_NETWORK_TOOLS_REPOSITORY_NAME && printf '\0')
+          echo ${CURRENT_VERSION_JUPYTER_NETWORK_TOOLS[0]}
+          echo ${CURRENT_VERSION_JUPYTER_NETWORK_TOOLS[1]}
+          echo ${CURRENT_VERSION_JUPYTER_NETWORK_TOOLS[2]}
+          
+          #CURRENT_VERSION_JUPYTER_SECRETS_SYNC=($(filter_version $JUPYTER_SECRETS_SYNC_REPOSITORY_NAME))
+          IFS=$'\n' read -r -d '' -a CURRENT_VERSION_JUPYTER_SECRETS_SYNC < <(filter_version $JUPYTER_SECRETS_SYNC_REPOSITORY_NAME && printf '\0')
+          echo ${CURRENT_VERSION_JUPYTER_SECRETS_SYNC[0]}
+          echo ${CURRENT_VERSION_JUPYTER_SECRETS_SYNC[1]}
+          echo ${CURRENT_VERSION_JUPYTER_SECRETS_SYNC[2]}
+          
+          #CURRENT_VERSION_OHDSI_WEBAPI=($(filter_version $OHDSI_WEBAPI_REPOSITORY_NAME))
+          IFS=$'\n' read -r -d '' -a CURRENT_VERSION_OHDSI_WEBAPI < <(filter_version $OHDSI_WEBAPI_REPOSITORY_NAME && printf '\0')
+          echo ${CURRENT_VERSION_OHDSI_WEBAPI[0]}
+          echo ${CURRENT_VERSION_OHDSI_WEBAPI[1]}
+          echo ${CURRENT_VERSION_OHDSI_WEBAPI[2]}
+          
+          #CURRENT_VERSION_OHDSI_ATLAS=($(filter_version $OHDSI_ATLAS_REPOSITORY_NAME))
+          IFS=$'\n' read -r -d '' -a CURRENT_VERSION_OHDSI_ATLAS < <(filter_version $OHDSI_ATLAS_REPOSITORY_NAME && printf '\0')
+          echo ${CURRENT_VERSION_OHDSI_ATLAS[0]}
+          echo ${CURRENT_VERSION_OHDSI_ATLAS[1]}
+          echo ${CURRENT_VERSION_OHDSI_ATLAS[2]}
+          
+          #CURRENT_VERSION_OHDSI_ACHILLES=($(filter_version $OHDSI_ACHILLES_REPOSITORY_NAME))
+          IFS=$'\n' read -r -d '' -a CURRENT_VERSION_OHDSI_ACHILLES < <(filter_version $OHDSI_ACHILLES_REPOSITORY_NAME && printf '\0')
+          echo ${CURRENT_VERSION_OHDSI_ACHILLES[0]}
+          echo ${CURRENT_VERSION_OHDSI_ACHILLES[1]}
+          echo ${CURRENT_VERSION_OHDSI_ACHILLES[2]}
+
+          function update_version_and_date {
+          local image_name="$1"
+          local new_version="$2"
+          local new_date="$3"
+          # Update the version
+          sed -i -E "s/(<td class=\"version\" data-name=\"$image_name\" data-version=\")[^\"]*(\">)[^<]*(<\/td>)/\1$new_version\2$new_version\3/" "$HTML_FILE"
+
+          # Update the release date
+          sed -i -E "s/(<td class=\"release-date\" data-name=\"$image_name\" data-date=\")[^\"]*(\">)[^<]*(<\/td>)/\1$new_date\2$new_date\3/" "$HTML_FILE" 
+          }
+
+          update_version_and_date "jupyter-hub" "${CURRENT_VERSION_JUPYTER_HUB[1]}" "${CURRENT_VERSION_JUPYTER_HUB[2]}"
+          update_version_and_date "jupyter-http-proxy" "${CURRENT_VERSION_JUPYTER_HTTP_PROXY[1]}" "${CURRENT_VERSION_JUPYTER_HTTP_PROXY[2]}" 
+          update_version_and_date "jupyter-datascience-notebook" "${CURRENT_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK[1]}" "${CURRENT_VERSION_JUPYTER_DATASCIENCE_NOTEBOOK[2]}"
+          update_version_and_date "jupyter-k8s-image-awaiter" "${CURRENT_VERSION_JUPYTER_IMAGE_AWAITER[1]}" "${CURRENT_VERSION_JUPYTER_IMAGE_AWAITER[2]}"
+          update_version_and_date "jupyter-k8s-kube-scheduler" "${CURRENT_VERSION_JUPYTER_KUBE_SCHEDULER[1]}" "${CURRENT_VERSION_JUPYTER_KUBE_SCHEDULER[2]}"
+          update_version_and_date "jupyter-k8s-secrets-sync" "${CURRENT_VERSION_JUPYTER_SECRETS_SYNC[1]}" "${CURRENT_VERSION_JUPYTER_SECRETS_SYNC[2]}"
+          update_version_and_date "jupyter-k8s-network-tools" "${CURRENT_VERSION_JUPYTER_NETWORK_TOOLS[1]}" "${CURRENT_VERSION_JUPYTER_NETWORK_TOOLS[2]}"
+          update_version_and_date "jupyter-k8s-pause" "${CURRENT_VERSION_JUPYTER_PAUSE[1]}" "${CURRENT_VERSION_JUPYTER_PAUSE[2]}"
+          update_version_and_date "ohdsi-webapi" "${CURRENT_VERSION_OHDSI_WEBAPI[1]}" "${CURRENT_VERSION_OHDSI_WEBAPI[2]}"
+          update_version_and_date "ohdsi-atlas" "${CURRENT_VERSION_OHDSI_ATLAS[1]}" "${CURRENT_VERSION_OHDSI_ATLAS[2]}"
+          update_version_and_date "ohdsi-achilles" "${CURRENT_VERSION_OHDSI_ACHILLES[1]}" "${CURRENT_VERSION_OHDSI_ACHILLES[2]}"
+         
+          echo "Version and date updated successfully."
+            
+            function update_manifest {
+                local image_name="$1"
+                local new_manifest="$2"
+            
+                # Use printf to escape special characters in the new_manifest for sed
+                local escaped_manifest=$(printf "%s" "$new_manifest" | sed 's/[\/&]/\\&/g' | sed 's/"/\\"/g')
+            
+                # Find the start line number of the manifest for the given image_name
+                local start_line=$(grep -n "'$image_name': {" "$HTML_FILE" | cut -d: -f1)
+            
+                # If the start line is not found, skip the update
+                if [ -z "$start_line" ]; then
+                    echo "No manifest section found for $image_name, skipping update."
+                    return
+                fi
+            
+                # Find the end line number of the manifest section which ends either at the next image_name or the end of manifest block
+                local next_section_line=$(tail -n +"$((start_line + 1))" "$HTML_FILE" | grep -n -m 1 "^'.*': {" | cut -d: -f1)
+                local end_line
+            
+                if [ -z "$next_section_line" ]; then
+                    end_line=$(grep -n '//' "$HTML_FILE" | cut -d: -f1 | head -n 1)
+                    if [ -z "$end_line" ]; then
+                        end_line=$(wc -l < "$HTML_FILE")
+                    fi
+                else
+                    end_line=$((start_line + next_section_line - 2))
+                fi
+            
+                # Check if the current section is the last one in the manifest
+                local is_last_image=true
+                if grep -q "^'.*': {" <(tail -n +$((end_line + 1)) "$HTML_FILE"); then
+                    is_last_image=false
+                fi
+            
+                # Prepare the replacement content in required format
+                local replacement="'${image_name}': ${escaped_manifest}"
+                if ! $is_last_image; then
+                    replacement="${replacement},"
+                fi
+            
+                # Replace the manifest block for the specific image_name
+                sed -i "${start_line},${end_line}c\\${replacement}" "$HTML_FILE"
+            }
+         
+          update_manifest "jupyter-hub" "$MANIFEST_JUPYTER_HUB"
+          update_manifest "jupyter-http-proxy" "$MANIFEST_JUPYTER_HTTP_PROXY"
+          update_manifest "jupyter-datascience-notebook" "$MANIFEST_JUPYTER_DATASCIENCE_NOTEBOOK"
+          update_manifest "jupyter-k8s-image-awaiter" "$MANIFEST_IMAGE_AWAITER"
+          update_manifest "jupyter-k8s-kube-scheduler" "$MANIFEST_KUBE_SCHEDULER"
+          update_manifest "jupyter-k8s-secrets-sync" "$MANIFEST_SECRETS_SYNC"
+          update_manifest "jupyter-k8s-network-tools" "$MANIFEST_JUPYTER_NETWORK_TOOLS"
+          update_manifest "jupyter-k8s-pause" "$MANIFEST_PAUSE_PROXY"
+          update_manifest "ohdsi-webapi" "$MANIFEST_OHDSI_WEBAPI"
+          update_manifest "ohdsi-atlas" "$MANIFEST_OHDSI_ATLAS"
+          update_manifest "ohdsi-achilles" "$MANIFEST_OHDSI_ACHILLES"
+
+          echo "Manifests updated successfully."
+
+          # Commit and push changes
+          git config --local user.name "${{ github.actor }}"
+          git config --local user.email "developer@mdaca.io"
+          git status
+          git add "${HTML_FILE}"
+          git commit -m "Update HTML file with new ECR manifests [skip ci]" || echo "No changes to commit"
+          git push origin main
+          
