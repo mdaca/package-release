@@ -5,6 +5,8 @@ on:
     branches:
       - main  # Adjust this if you want to run on a different branch
   workflow_dispatch:  # Allows manual trigger of the workflow
+  schedule:
+  - cron: '0 * * * *'
 
 jobs:
   update-html:
