@@ -256,5 +256,6 @@ jobs:
           git status
           git add "${HTML_FILE}"
           git commit -m "Update HTML file with new ECR manifests [skip ci]" || echo "No changes to commit"
+          git pull --rebase origin main
           git push origin main
           
