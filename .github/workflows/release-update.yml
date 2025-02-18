@@ -3,7 +3,7 @@ name: Update HTML File with ECR Manifests
 on:
   push:
     branches:
-      - main  # Adjust this if you want to run on a different branch
+      - scheduling  # Adjust this if you want to run on a different branch
   workflow_dispatch:  # Allows manual trigger of the workflow
   schedule:
   - cron: '0 * * * *'
@@ -258,5 +258,6 @@ jobs:
           git status
           git add "${HTML_FILE}"
           git commit -m "Update HTML file with new ECR manifests [skip ci]" || echo "No changes to commit"
-          git push origin main
+          git pull --rebase origin scheduling
+          git push origin scheduling
           
