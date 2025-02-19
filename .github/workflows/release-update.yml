@@ -5,7 +5,9 @@ on:
     branches:
       - main  # Adjust this if you want to run on a different branch
   workflow_dispatch:  # Allows manual trigger of the workflow
-
+  schedule:
+      - cron: '0 0 * * 1-5' # Runs at 00:00 UTC on Monday through Friday. Adjust the time as needed.
+  
 jobs:
   update-html:
     runs-on: ubuntu-latest
